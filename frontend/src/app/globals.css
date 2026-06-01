@@ -159,6 +159,29 @@ input {
   opacity: 0.7;
 }
 
+.secondaryButton {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--primary-dark);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+.secondaryButton:hover {
+  border-color: var(--primary);
+}
+
+.secondaryButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .summaryPanel,
 .formPanel {
   background: var(--surface);
@@ -208,6 +231,13 @@ input {
   color: var(--muted);
   line-height: 1.6;
   max-width: 840px;
+}
+
+.exportActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .formGrid {
@@ -459,6 +489,20 @@ tr:last-child td {
   margin: 0;
 }
 
+.markdownPreview {
+  background: #101820;
+  border-radius: 8px;
+  color: #edf5f7;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  max-height: 520px;
+  overflow: auto;
+  padding: 18px;
+  white-space: pre-wrap;
+}
+
 @media (max-width: 900px) {
   .homeGrid,
   .formGrid,
@@ -482,6 +526,10 @@ tr:last-child td {
   }
 
   .primaryButton {
+    width: 100%;
+  }
+
+  .secondaryButton {
     width: 100%;
   }
 }

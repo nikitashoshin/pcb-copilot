@@ -6,7 +6,7 @@ Frontend показывает три страницы:
 
 - `/` - главная страница;
 - `/new-project` - форма первого демонстрационного сценария;
-- `/result` - результат генерации архитектуры, BoM, warnings и checkResults.
+- `/result` - результат генерации архитектуры, BoM, warnings и checkResults, а также экспорт BoM CSV и Markdown-отчета.
 
 ## Настройка API
 
