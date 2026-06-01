@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PcbCopilot.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fbc1d25d866af845db82b78f7a147c255364e30c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95b8e817a205ff175c28afceaa5da7f5bcf88492")]
 [assembly: System.Reflection.AssemblyProductAttribute("PcbCopilot.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PcbCopilot.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
