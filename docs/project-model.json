@@ -1,0 +1,197 @@
+{
+  "project": {
+    "name": "STM32 Industrial Controller MVP",
+    "description": "Черновик промышленного контроллера на STM32 с питанием 24 В, RS-485, дискретными входами и релейными выходами.",
+    "target_cad": "KiCad",
+    "status": "draft",
+    "requires_engineering_review": true
+  },
+  "constraints": {
+    "board_size_mm": {
+      "width": 80,
+      "height": 60
+    },
+    "environment": "industrial",
+    "input_power": {
+      "nominal_voltage_v": 24,
+      "type": "DC",
+      "reverse_polarity_protection": true
+    }
+  },
+  "mcu": {
+    "family": "STM32",
+    "core_voltage_v": 3.3,
+    "debug_interface": "SWD",
+    "notes": [
+      "Конкретная модель STM32 выбирается инженером на следующем этапе.",
+      "Нужно проверить количество GPIO, интерфейсы UART, требования к памяти и корпус."
+    ]
+  },
+  "power_tree": [
+    {
+      "id": "input_power_24v",
+      "name": "24 В вход питания",
+      "input": "24 V DC",
+      "output": "24 V protected"
+    },
+    {
+      "id": "dc_dc_24_to_5",
+      "name": "DC/DC 24 В -> 5 В",
+      "input": "24 V protected",
+      "output": "5 V"
+    },
+    {
+      "id": "ldo_5_to_3v3",
+      "name": "LDO 5 В -> 3.3 В",
+      "input": "5 V",
+      "output": "3.3 V"
+    }
+  ],
+  "interfaces": {
+    "rs485": {
+      "enabled": true,
+      "channels": 1,
+      "isolation": "not_defined",
+      "termination": "configurable",
+      "biasing": "required"
+    },
+    "swd": {
+      "enabled": true,
+      "connector": "standard_2x5_or_1x4_to_be_selected"
+    }
+  },
+  "io": {
+    "digital_inputs_24v": {
+      "channels": 4,
+      "recommended_features": [
+        "current_limiting",
+        "input_filtering",
+        "voltage_clamping",
+        "galvanic_isolation_to_be_evaluated"
+      ]
+    },
+    "relay_outputs": {
+      "channels": 2,
+      "coil_voltage_v": 5,
+      "recommended_features": [
+        "flyback_protection",
+        "contact_rating_review",
+        "clearance_and_creepage_review"
+      ]
+    }
+  },
+  "indication": {
+    "leds": [
+      {
+        "id": "power_led",
+        "purpose": "Питание"
+      },
+      {
+        "id": "status_led",
+        "purpose": "Состояние MCU"
+      },
+      {
+        "id": "rs485_led",
+        "purpose": "Активность RS-485"
+      }
+    ]
+  },
+  "functional_blocks": [
+    "input_power_24v",
+    "reverse_polarity_protection",
+    "dc_dc_24_to_5",
+    "ldo_5_to_3v3",
+    "stm32_core",
+    "swd_connector",
+    "rs485_interface",
+    "digital_input_24v",
+    "relay_output",
+    "led_indication",
+    "connectors"
+  ],
+  "bom_draft": [
+    {
+      "block": "input_power_24v",
+      "items": [
+        "power_input_connector",
+        "input_fuse_or_polyfuse",
+        "tvs_diode",
+        "bulk_capacitor"
+      ]
+    },
+    {
+      "block": "reverse_polarity_protection",
+      "items": [
+        "protection_diode_or_pmos",
+        "supporting_resistors"
+      ]
+    },
+    {
+      "block": "dc_dc_24_to_5",
+      "items": [
+        "buck_converter_ic_or_module",
+        "inductor",
+        "schottky_diode_if_required",
+        "input_capacitors",
+        "output_capacitors",
+        "feedback_resistors"
+      ]
+    },
+    {
+      "block": "ldo_5_to_3v3",
+      "items": [
+        "3v3_ldo",
+        "input_capacitor",
+        "output_capacitor"
+      ]
+    },
+    {
+      "block": "stm32_core",
+      "items": [
+        "stm32_mcu",
+        "decoupling_capacitors",
+        "reset_circuit",
+        "clock_source_if_required",
+        "boot_configuration_resistors"
+      ]
+    },
+    {
+      "block": "rs485_interface",
+      "items": [
+        "rs485_transceiver",
+        "termination_resistor",
+        "bias_resistors",
+        "tvs_or_esd_protection",
+        "rs485_connector"
+      ]
+    },
+    {
+      "block": "digital_input_24v",
+      "items": [
+        "input_resistors",
+        "rc_filters",
+        "clamp_or_tvs_diodes",
+        "optoisolators_or_level_shift_stage_to_be_evaluated"
+      ]
+    },
+    {
+      "block": "relay_output",
+      "items": [
+        "relay",
+        "transistor_or_driver",
+        "flyback_diode",
+        "terminal_block",
+        "contact_protection_to_be_evaluated"
+      ]
+    }
+  ],
+  "engineering_warnings": [
+    "Проверить требования по гальванической изоляции для RS-485 и дискретных входов.",
+    "Проверить зазоры и пути утечки для релейных контактов и внешних цепей.",
+    "Проверить тепловой режим DC/DC-преобразователя при питании 24 В.",
+    "Проверить защиту от ESD, EFT и перенапряжений для промышленных линий.",
+    "Проверить ток катушек реле и бюджет питания 5 В.",
+    "Проверить соответствие выбранного STM32 числу GPIO и периферии.",
+    "Не использовать результат без ручной инженерной проверки."
+  ]
+}
