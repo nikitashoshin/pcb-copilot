@@ -9,21 +9,21 @@
 ```powershell
 cd backend
 dotnet restore --ignore-failed-sources
-dotnet run
+dotnet run --no-build --urls http://127.0.0.1:5065
 ```
 
 Swagger UI будет доступен по адресу:
 
 ```text
-http://localhost:5000/swagger
+http://127.0.0.1:5065/swagger
 ```
-
-Если `dotnet run` выберет другой порт, он будет указан в выводе команды.
 
 ## Endpoints
 
 - `GET /api/projects/sample` - возвращает пример `ProjectSpec` для сценария STM32 + 24 В + RS-485 + 4 дискретных входа + 2 релейных выхода + 80 x 60 мм.
 - `POST /api/projects/generate-architecture` - принимает `ProjectSpec` и возвращает `ArchitectureResult`.
+- `POST /api/projects/export-bom-csv` - принимает `ArchitectureResult` и возвращает BoM в CSV.
+- `POST /api/projects/generate-report` - принимает `ArchitectureResult` и возвращает Markdown-отчет.
 
 ## Справочник блоков
 

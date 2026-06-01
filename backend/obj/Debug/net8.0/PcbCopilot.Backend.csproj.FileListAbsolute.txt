@@ -66,3 +66,4 @@ C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\a059d6ffe6e81f2d\obj\Debug\net8
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\a059d6ffe6e81f2d\obj\Debug\net8.0\PcbCopilot.Backend.pdb
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\a059d6ffe6e81f2d\obj\Debug\net8.0\PcbCopilot.Backend.genruntimeconfig.cache
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\a059d6ffe6e81f2d\obj\Debug\net8.0\ref\PcbCopilot.Backend.dll
+C:\Users\NShoshin\Projects\pcb-copilot\backend\obj\Debug\net8.0\PcbCopilot.Backend.sourcelink.json
