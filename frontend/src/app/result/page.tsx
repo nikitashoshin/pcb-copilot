@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { exportBomCsv, generateMarkdownReport } from "@/lib/api";
 import { loadArchitectureResult } from "@/lib/result-storage";
-import type { ArchitectureResult, CheckResult } from "@/lib/types";
+import type { ArchitectureResult, CheckResult, ProjectSpec } from "@/lib/types";
 
 function severityClass(severity: string) {
   const normalized = severity.toLowerCase();
@@ -43,6 +43,81 @@ function downloadBlob(blob: Blob, fileName: string) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+function formatList(values: string[] | undefined) {
+  return values && values.length > 0 ? values.join(", ") : "-";
+}
+
+function RequirementsSummary({ spec }: { spec?: ProjectSpec | null }) {
+  if (!spec) {
+    return (
+      <dl className="requirementsGrid">
+        <div>
+          <dt>ProjectSpec</dt>
+          <dd>Исходные требования не сохранены в текущем результате.</dd>
+        </div>
+      </dl>
+    );
+  }
+
+  return (
+    <dl className="requirementsGrid">
+      <div>
+        <dt>projectName</dt>
+        <dd>{spec.projectName || "-"}</dd>
+      </div>
+      <div>
+        <dt>deviceType</dt>
+        <dd>{spec.deviceType || "-"}</dd>
+      </div>
+      <div>
+        <dt>power.input</dt>
+        <dd>{spec.power?.input || "-"}</dd>
+      </div>
+      <div>
+        <dt>power.outputs</dt>
+        <dd>{formatList(spec.power?.outputs)}</dd>
+      </div>
+      <div>
+        <dt>power.protection</dt>
+        <dd>{spec.power?.protection ? "enabled" : "disabled"}</dd>
+      </div>
+      <div>
+        <dt>mcu.family</dt>
+        <dd>{spec.mcu?.family || "-"}</dd>
+      </div>
+      <div>
+        <dt>mcu.programming</dt>
+        <dd>{spec.mcu?.programming || "-"}</dd>
+      </div>
+      <div>
+        <dt>interfaces</dt>
+        <dd>{formatList(spec.interfaces)}</dd>
+      </div>
+      <div>
+        <dt>digitalInputs</dt>
+        <dd>
+          {spec.digitalInputs?.count ?? 0} x {spec.digitalInputs?.voltage || "-"}
+        </dd>
+      </div>
+      <div>
+        <dt>relayOutputs</dt>
+        <dd>{spec.relayOutputs?.count ?? 0}</dd>
+      </div>
+      <div>
+        <dt>board</dt>
+        <dd>
+          {spec.board?.widthMm ?? "-"} x {spec.board?.heightMm ?? "-"} mm,{" "}
+          {spec.board?.layers ?? "-"} layers
+        </dd>
+      </div>
+      <div>
+        <dt>environment</dt>
+        <dd>{spec.environment || "-"}</dd>
+      </div>
+    </dl>
+  );
 }
 
 export default function ResultPage() {
@@ -169,6 +244,14 @@ export default function ResultPage() {
         </div>
         {exportError && <div className="errorBox">{exportError}</div>}
       </div>
+
+      <section>
+        <div className="sectionTitle">
+          <h2>Исходные требования проекта</h2>
+          <span>Spec</span>
+        </div>
+        <RequirementsSummary spec={result.projectSpec} />
+      </section>
 
       <section>
         <div className="sectionTitle">

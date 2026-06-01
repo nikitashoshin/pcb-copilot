@@ -64,8 +64,21 @@ export type CheckResult = {
   relatedBlockCode?: string | null;
 };
 
+export type ValidationIssue = {
+  code: string;
+  severity: "Info" | "Warning" | "Error" | string;
+  message: string;
+  recommendation: string;
+};
+
+export type ValidationResult = {
+  isValid: boolean;
+  issues: ValidationIssue[];
+};
+
 export type ArchitectureResult = {
   projectName: string;
+  projectSpec?: ProjectSpec | null;
   functionalBlocks: FunctionalBlockResult[];
   bom: BomItem[];
   warnings: EngineeringWarning[];

@@ -278,6 +278,45 @@ input {
   margin-top: 24px;
 }
 
+.validationPanel {
+  border-top: 1px solid var(--line);
+  margin-top: 22px;
+  padding-top: 20px;
+}
+
+.validationPanel h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+.validationList {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.validationItem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--info);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+}
+
+.validationItem strong {
+  font-size: 13px;
+}
+
+.validationItem span,
+.validationItem small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .resultStack {
   display: grid;
   gap: 32px;
@@ -311,6 +350,36 @@ input {
   display: grid;
   gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.requirementsGrid {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  overflow: hidden;
+}
+
+.requirementsGrid div {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  min-width: 0;
+  padding: 14px 16px;
+}
+
+.requirementsGrid dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.requirementsGrid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .blockCard,
@@ -506,7 +575,8 @@ tr:last-child td {
 @media (max-width: 900px) {
   .homeGrid,
   .formGrid,
-  .blockGrid {
+  .blockGrid,
+  .requirementsGrid {
     grid-template-columns: 1fr;
   }
 

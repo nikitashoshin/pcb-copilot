@@ -17,6 +17,7 @@ public sealed class MarkdownReportGenerator
         builder.AppendLine($"> {Disclaimer}");
         builder.AppendLine();
 
+        AppendRequirements(builder, architecture.ProjectSpec);
         AppendFunctionalBlocks(builder, architecture);
         AppendBom(builder, architecture);
         AppendWarnings(builder, architecture);
@@ -24,6 +25,40 @@ public sealed class MarkdownReportGenerator
         AppendConclusion(builder, architecture);
 
         return builder.ToString();
+    }
+
+    private static void AppendRequirements(StringBuilder builder, ProjectSpec? spec)
+    {
+        builder.AppendLine("## Исходные требования");
+        builder.AppendLine();
+
+        if (spec is null)
+        {
+            builder.AppendLine("Исходные требования не сохранены в результате.");
+            builder.AppendLine();
+            return;
+        }
+
+        var power = spec.Power ?? new PowerSpec();
+        var mcu = spec.Mcu ?? new McuSpec();
+        var digitalInputs = spec.DigitalInputs ?? new DigitalInputsSpec();
+        var relayOutputs = spec.RelayOutputs ?? new RelayOutputsSpec();
+        var board = spec.Board ?? new BoardSpec();
+
+        builder.AppendLine($"- Project name: {Cell(spec.ProjectName)}");
+        builder.AppendLine($"- Device type: {Cell(spec.DeviceType)}");
+        builder.AppendLine($"- Power input: {Cell(power.Input)}");
+        builder.AppendLine($"- Power outputs: {Cell(string.Join(", ", power.Outputs))}");
+        builder.AppendLine($"- Power protection: {(power.Protection ? "enabled" : "disabled")}");
+        builder.AppendLine($"- MCU: {Cell(mcu.Family)}");
+        builder.AppendLine($"- Programming: {Cell(mcu.Programming)}");
+        builder.AppendLine($"- Interfaces: {Cell(string.Join(", ", spec.Interfaces))}");
+        builder.AppendLine($"- Digital inputs: {digitalInputs.Count} x {Cell(digitalInputs.Voltage)}");
+        builder.AppendLine($"- Relay outputs: {relayOutputs.Count}");
+        builder.AppendLine($"- Indication: {Cell(string.Join(", ", spec.Indication))}");
+        builder.AppendLine($"- Board: {board.WidthMm} x {board.HeightMm} mm, {board.Layers} layers");
+        builder.AppendLine($"- Environment: {Cell(spec.Environment)}");
+        builder.AppendLine();
     }
 
     private static void AppendFunctionalBlocks(StringBuilder builder, ArchitectureResult architecture)

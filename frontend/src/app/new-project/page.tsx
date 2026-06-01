@@ -2,9 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { generateArchitecture } from "@/lib/api";
+import { generateArchitecture, validateProjectSpec } from "@/lib/api";
 import { saveArchitectureResult } from "@/lib/result-storage";
-import type { ProjectSpec } from "@/lib/types";
+import type { ProjectSpec, ValidationIssue } from "@/lib/types";
 
 type ProjectFormState = {
   projectName: string;
@@ -35,6 +35,7 @@ export default function NewProjectPage() {
   const [form, setForm] = useState<ProjectFormState>(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
 
   function updateField<Key extends keyof ProjectFormState>(
     key: Key,
@@ -86,13 +87,23 @@ export default function NewProjectPage() {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
+    setValidationIssues([]);
 
     try {
-      const result = await generateArchitecture(toProjectSpec());
+      const spec = toProjectSpec();
+      const validation = await validateProjectSpec(spec);
+      setValidationIssues(validation.issues);
+
+      if (!validation.isValid) {
+        setError("Исправьте ошибки в ProjectSpec перед формированием архитектуры.");
+        return;
+      }
+
+      const result = await generateArchitecture(spec);
       saveArchitectureResult(result);
       router.push("/result");
     } catch {
-      setError("Backend недоступен. Проверьте, что .NET API запущен на http://localhost:5065.");
+      setError("Backend недоступен. Проверьте, что .NET API запущен на http://127.0.0.1:5065.");
     } finally {
       setIsLoading(false);
     }
@@ -196,9 +207,26 @@ export default function NewProjectPage() {
 
         {error && <div className="errorBox">{error}</div>}
 
+        {validationIssues.length > 0 && (
+          <div className="validationPanel">
+            <h2>Validation Result</h2>
+            <ul className="validationList">
+              {validationIssues.map((issue) => (
+                <li className={`validationItem severity${issue.severity}`} key={issue.code}>
+                  <strong>
+                    {issue.severity}: {issue.code}
+                  </strong>
+                  <span>{issue.message}</span>
+                  <small>{issue.recommendation}</small>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="formActions">
           <button className="primaryButton" disabled={isLoading} type="submit">
-            {isLoading ? "Формирование..." : "Сформировать архитектуру"}
+            {isLoading ? "Проверка и формирование..." : "Сформировать архитектуру"}
           </button>
         </div>
       </form>

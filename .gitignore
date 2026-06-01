@@ -37,3 +37,4 @@ temp/
 
 # Generated files
 generated/
+.vs/

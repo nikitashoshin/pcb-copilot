@@ -21,6 +21,7 @@ http://127.0.0.1:5065/swagger
 ## Endpoints
 
 - `GET /api/projects/sample` - возвращает пример `ProjectSpec` для сценария STM32 + 24 В + RS-485 + 4 дискретных входа + 2 релейных выхода + 80 x 60 мм.
+- `POST /api/projects/validate` - принимает `ProjectSpec` и возвращает результат базовой валидации.
 - `POST /api/projects/generate-architecture` - принимает `ProjectSpec` и возвращает `ArchitectureResult`.
 - `POST /api/projects/export-bom-csv` - принимает `ArchitectureResult` и возвращает BoM в CSV.
 - `POST /api/projects/generate-report` - принимает `ArchitectureResult` и возвращает Markdown-отчет.

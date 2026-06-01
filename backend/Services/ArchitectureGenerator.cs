@@ -23,6 +23,7 @@ public sealed class ArchitectureGenerator
         return new ArchitectureResult
         {
             ProjectName = string.IsNullOrWhiteSpace(spec.ProjectName) ? "Untitled PCB Copilot Project" : spec.ProjectName,
+            ProjectSpec = spec,
             FunctionalBlocks = functionalBlocks,
             Bom = bom,
             Warnings = DedupeWarnings(warnings),

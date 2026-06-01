@@ -16,6 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FunctionalBlockCatalog>();
 builder.Services.AddSingleton<ArchitectureGenerator>();
+builder.Services.AddSingleton<ProjectSpecValidator>();
 builder.Services.AddSingleton<BomCsvExporter>();
 builder.Services.AddSingleton<MarkdownReportGenerator>();
 builder.Services.AddCors(options =>
@@ -52,6 +53,15 @@ projects.MapPost("/generate-architecture", (ProjectSpec spec, ArchitectureGenera
     .WithName("GenerateArchitecture")
     .Accepts<ProjectSpec>("application/json")
     .Produces<ArchitectureResult>();
+
+projects.MapPost("/validate", (ProjectSpec spec, ProjectSpecValidator validator) =>
+    {
+        var result = validator.Validate(spec);
+        return Results.Ok(result);
+    })
+    .WithName("ValidateProjectSpec")
+    .Accepts<ProjectSpec>("application/json")
+    .Produces<ValidationResult>();
 
 projects.MapPost("/export-bom-csv", (ArchitectureResult architecture, BomCsvExporter exporter) =>
     {
