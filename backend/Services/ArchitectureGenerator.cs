@@ -126,7 +126,7 @@ public sealed class ArchitectureGenerator
                 {
                     Code = "FUNCTIONAL_BLOCK_NOT_FOUND",
                     Severity = "Warning",
-                    Message = $"Functional block '{selection.Code}' is not present in functional-blocks.json.",
+                    Message = $"Функциональный блок '{selection.Code}' отсутствует в functional-blocks.json.",
                     RelatedBlockCode = selection.Code
                 });
                 continue;
@@ -191,7 +191,7 @@ public sealed class ArchitectureGenerator
             {
                 Code = "COMPONENT_FOOTPRINT_MISSING",
                 Severity = "Warning",
-                Message = $"Component '{bomItem.Name}' from block '{bomItem.BlockCode}' has no footprint.",
+                Message = $"У компонента '{bomItem.Name}' из блока '{bomItem.BlockCode}' не задан footprint.",
                 RelatedBlockCode = bomItem.BlockCode
             });
         }
@@ -207,7 +207,7 @@ public sealed class ArchitectureGenerator
             {
                 Code = "CHECK_INDUSTRIAL_EMC",
                 Severity = "Warning",
-                Message = "For industrial environment, check EMC requirements before production."
+                Message = "Для промышленной среды проверьте требования EMC перед производством."
             });
         }
 
@@ -215,7 +215,7 @@ public sealed class ArchitectureGenerator
         {
             Code = "ENGINEERING_REVIEW_REQUIRED",
             Severity = "Warning",
-            Message = "This project is a draft architecture and requires manual review by an electronics engineer."
+            Message = "Проект является черновой архитектурой и требует ручной проверки инженером-электронщиком."
         });
     }
 
@@ -235,76 +235,76 @@ public sealed class ArchitectureGenerator
             new()
             {
                 Code = "STM32_REQUIRES_3V3",
-                Title = "STM32 requires 3.3V supply",
+                Title = "STM32 требует питание 3.3V",
                 Severity = usesStm32 && !ContainsValue(power.Outputs, "3.3V") ? "Error" : "Info",
                 Status = !usesStm32 ? "NotApplicable" : ContainsValue(power.Outputs, "3.3V") ? "Passed" : "Failed",
                 Message = !usesStm32
-                    ? "STM32 is not selected."
+                    ? "STM32 не выбран."
                     : ContainsValue(power.Outputs, "3.3V")
-                        ? "3.3V rail is present."
-                        : "3.3V rail is missing for STM32.",
-                Recommendation = "Verify regulator current, decoupling capacitors and STM32 power pins.",
+                        ? "Линия питания 3.3V присутствует."
+                        : "Для STM32 отсутствует линия питания 3.3V.",
+                Recommendation = "Проверьте ток стабилизатора, развязывающие конденсаторы и выводы питания STM32.",
                 RelatedBlockCode = "stm32_core"
             },
             new()
             {
                 Code = "STM32_REQUIRES_SWD",
-                Title = "STM32 requires SWD connector",
+                Title = "STM32 требует SWD-разъём",
                 Severity = usesStm32 && !IsSame(mcu.Programming, "SWD") ? "Error" : "Info",
                 Status = !usesStm32 ? "NotApplicable" : IsSame(mcu.Programming, "SWD") ? "Passed" : "Failed",
                 Message = !usesStm32
-                    ? "STM32 is not selected."
+                    ? "STM32 не выбран."
                     : IsSame(mcu.Programming, "SWD")
-                        ? "SWD programming connector is requested."
-                        : "SWD programming connector is not requested.",
-                Recommendation = "Keep SWDIO, SWCLK, GND, target voltage and optionally NRST accessible.",
+                        ? "SWD-разъём для прошивки запрошен."
+                        : "SWD-разъём для прошивки не запрошен.",
+                Recommendation = "Оставьте доступными SWDIO, SWCLK, GND, опорное питание и при необходимости NRST.",
                 RelatedBlockCode = "swd_connector"
             },
             new()
             {
                 Code = "RS485_TERMINATION_REVIEW",
-                Title = "RS-485 requires termination resistor review",
+                Title = "RS-485 требует проверки терминатора",
                 Severity = usesRs485 ? "Warning" : "Info",
                 Status = usesRs485 ? "ReviewRequired" : "NotApplicable",
                 Message = usesRs485
-                    ? "RS-485 is selected; 120 Ohm termination must be checked for the bus topology."
-                    : "RS-485 is not selected.",
-                Recommendation = "Decide whether termination should be always mounted, optional, or jumper-configurable.",
+                    ? "Выбран RS-485; терминатор 120 Ом нужно проверить с учётом топологии шины."
+                    : "RS-485 не выбран.",
+                Recommendation = "Определите, должен ли терминатор быть установлен постоянно, опционально или через перемычку.",
                 RelatedBlockCode = "rs485_interface"
             },
             new()
             {
                 Code = "RELAY_LOAD_CURRENT_REVIEW",
-                Title = "Relay outputs require load current review",
+                Title = "Релейные выходы требуют проверки нагрузки",
                 Severity = usesRelays ? "Warning" : "Info",
                 Status = usesRelays ? "ReviewRequired" : "NotApplicable",
                 Message = usesRelays
-                    ? "Relay outputs are selected; load current and voltage must be verified."
-                    : "Relay outputs are not selected.",
-                Recommendation = "Check relay contact rating, load type, protection and clearance requirements.",
+                    ? "Выбраны релейные выходы; ток и напряжение нагрузки нужно проверить."
+                    : "Релейные выходы не выбраны.",
+                Recommendation = "Проверьте номинал контактов реле, тип нагрузки, защиту и требования к зазорам.",
                 RelatedBlockCode = "relay_output"
             },
             new()
             {
                 Code = "INDUSTRIAL_EMC_REVIEW",
-                Title = "Industrial use requires EMC review",
+                Title = "Промышленное применение требует проверки EMC",
                 Severity = isIndustrial ? "Warning" : "Info",
                 Status = isIndustrial ? "ReviewRequired" : "NotApplicable",
                 Message = isIndustrial
-                    ? "Industrial environment is selected; EMC, ESD and surge requirements must be reviewed."
-                    : "Industrial environment is not selected.",
-                Recommendation = "Review input protection, interface protection, filtering, layout and grounding strategy."
+                    ? "Выбрана промышленная среда; требования EMC, ESD и импульсной защиты нужно проверить."
+                    : "Промышленная среда не выбрана.",
+                Recommendation = "Проверьте входную защиту, защиту интерфейсов, фильтрацию, топологию и заземление."
             },
             new()
             {
                 Code = "COMPONENTS_REQUIRE_FOOTPRINTS",
-                Title = "Components should have footprints",
+                Title = "Для компонентов должны быть footprint",
                 Severity = allFootprintsPresent ? "Info" : "Error",
                 Status = allFootprintsPresent ? "Passed" : "Failed",
                 Message = allFootprintsPresent
-                    ? "All BoM lines have non-empty footprint fields."
-                    : "At least one BoM line has no footprint.",
-                Recommendation = "Assign and verify KiCad footprints before KiCad project generation."
+                    ? "Во всех строках BoM заполнено поле footprint."
+                    : "Минимум в одной строке BoM отсутствует footprint.",
+                Recommendation = "Назначьте и проверьте KiCad footprint перед генерацией KiCad-проекта."
             }
         };
     }

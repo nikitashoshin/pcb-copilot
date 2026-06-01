@@ -21,7 +21,6 @@ export default function RootLayout({
           </Link>
           <nav className="nav">
             <Link href="/new-project">Создать проект</Link>
-            <Link href="/result">Результат</Link>
           </nav>
         </header>
         <main>{children}</main>

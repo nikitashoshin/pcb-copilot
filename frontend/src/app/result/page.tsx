@@ -21,7 +21,28 @@ function severityClass(severity: string) {
 }
 
 function statusLabel(check: CheckResult) {
-  return `${check.severity} / ${check.status}`;
+  return `${severityLabel(check.severity)} / ${statusText(check.status)}`;
+}
+
+function severityLabel(severity: string) {
+  const labels: Record<string, string> = {
+    Info: "Информация",
+    Warning: "Предупреждение",
+    Error: "Ошибка",
+  };
+
+  return labels[severity] ?? severity;
+}
+
+function statusText(status: string) {
+  const labels: Record<string, string> = {
+    Passed: "Пройдено",
+    ReviewRequired: "Требует проверки",
+    Failed: "Не пройдено",
+    NotApplicable: "Не применимо",
+  };
+
+  return labels[status] ?? status;
 }
 
 function safeFileName(projectName: string, extension: string) {
@@ -54,7 +75,7 @@ function RequirementsSummary({ spec }: { spec?: ProjectSpec | null }) {
     return (
       <dl className="requirementsGrid">
         <div>
-          <dt>ProjectSpec</dt>
+          <dt>Исходные требования</dt>
           <dd>Исходные требования не сохранены в текущем результате.</dd>
         </div>
       </dl>
@@ -64,56 +85,56 @@ function RequirementsSummary({ spec }: { spec?: ProjectSpec | null }) {
   return (
     <dl className="requirementsGrid">
       <div>
-        <dt>projectName</dt>
+        <dt>Название проекта</dt>
         <dd>{spec.projectName || "-"}</dd>
       </div>
       <div>
-        <dt>deviceType</dt>
+        <dt>Тип устройства</dt>
         <dd>{spec.deviceType || "-"}</dd>
       </div>
       <div>
-        <dt>power.input</dt>
+        <dt>Входное питание</dt>
         <dd>{spec.power?.input || "-"}</dd>
       </div>
       <div>
-        <dt>power.outputs</dt>
+        <dt>Внутренние линии питания</dt>
         <dd>{formatList(spec.power?.outputs)}</dd>
       </div>
       <div>
-        <dt>power.protection</dt>
-        <dd>{spec.power?.protection ? "enabled" : "disabled"}</dd>
+        <dt>Защита питания</dt>
+        <dd>{spec.power?.protection ? "включена" : "выключена"}</dd>
       </div>
       <div>
-        <dt>mcu.family</dt>
+        <dt>Микроконтроллер</dt>
         <dd>{spec.mcu?.family || "-"}</dd>
       </div>
       <div>
-        <dt>mcu.programming</dt>
+        <dt>Интерфейс программирования</dt>
         <dd>{spec.mcu?.programming || "-"}</dd>
       </div>
       <div>
-        <dt>interfaces</dt>
+        <dt>Интерфейсы</dt>
         <dd>{formatList(spec.interfaces)}</dd>
       </div>
       <div>
-        <dt>digitalInputs</dt>
+        <dt>Дискретные входы</dt>
         <dd>
           {spec.digitalInputs?.count ?? 0} x {spec.digitalInputs?.voltage || "-"}
         </dd>
       </div>
       <div>
-        <dt>relayOutputs</dt>
+        <dt>Релейные выходы</dt>
         <dd>{spec.relayOutputs?.count ?? 0}</dd>
       </div>
       <div>
-        <dt>board</dt>
+        <dt>Плата</dt>
         <dd>
           {spec.board?.widthMm ?? "-"} x {spec.board?.heightMm ?? "-"} mm,{" "}
-          {spec.board?.layers ?? "-"} layers
+          {spec.board?.layers ?? "-"} слоя
         </dd>
       </div>
       <div>
-        <dt>environment</dt>
+        <dt>Среда применения</dt>
         <dd>{spec.environment || "-"}</dd>
       </div>
     </dl>
@@ -145,7 +166,7 @@ export default function ResultPage() {
       const csv = await exportBomCsv(result);
       downloadBlob(csv, safeFileName(result.projectName, "-bom.csv"));
     } catch {
-      setExportError("Не удалось скачать CSV. Проверьте, что backend доступен на 127.0.0.1:5065.");
+      setExportError("Не удалось скачать CSV. Проверьте, что серверная часть доступна на 127.0.0.1:5065.");
     } finally {
       setCsvLoading(false);
     }
@@ -162,31 +183,26 @@ export default function ResultPage() {
     try {
       setMarkdownReport(await generateMarkdownReport(result));
     } catch {
-      setExportError("Не удалось сформировать отчёт. Проверьте, что backend доступен на 127.0.0.1:5065.");
+      setExportError("Не удалось сформировать отчёт. Проверьте, что серверная часть доступна на 127.0.0.1:5065.");
     } finally {
       setReportLoading(false);
     }
   }
 
   async function handleDownloadMarkdown() {
-    if (!result) {
+    if (!result || !markdownReport) {
       return;
     }
 
-    setReportLoading(true);
     setExportError(null);
 
     try {
-      const report = markdownReport ?? (await generateMarkdownReport(result));
-      setMarkdownReport(report);
       downloadBlob(
-        new Blob([report], { type: "text/markdown;charset=utf-8" }),
+        new Blob([markdownReport], { type: "text/markdown;charset=utf-8" }),
         safeFileName(result.projectName, "-report.md"),
       );
     } catch {
-      setExportError("Не удалось скачать Markdown. Проверьте, что backend доступен на 127.0.0.1:5065.");
-    } finally {
-      setReportLoading(false);
+      setExportError("Не удалось скачать Markdown. Проверьте, что серверная часть доступна на 127.0.0.1:5065.");
     }
   }
 
@@ -215,7 +231,7 @@ export default function ResultPage() {
   return (
     <section className="pageShell resultStack">
       <div className="sectionHeader">
-        <p className="eyebrow">ArchitectureResult</p>
+        <p className="eyebrow">Результат архитектуры</p>
         <h1>{result.projectName}</h1>
         <p className="disclaimer">
           Сгенерированный проект является инженерным черновиком и требует обязательной
@@ -235,11 +251,11 @@ export default function ResultPage() {
           </button>
           <button
             className="primaryButton"
-            disabled={reportLoading}
+            disabled={reportLoading || !markdownReport}
             onClick={handleDownloadMarkdown}
             type="button"
           >
-            {reportLoading ? "Подготовка Markdown..." : "Скачать Markdown"}
+            Скачать Markdown
           </button>
         </div>
         {exportError && <div className="errorBox">{exportError}</div>}
@@ -248,14 +264,14 @@ export default function ResultPage() {
       <section>
         <div className="sectionTitle">
           <h2>Исходные требования проекта</h2>
-          <span>Spec</span>
+          <span>ТЗ</span>
         </div>
         <RequirementsSummary spec={result.projectSpec} />
       </section>
 
       <section>
         <div className="sectionTitle">
-          <h2>Functional Blocks</h2>
+          <h2>Функциональные блоки</h2>
           <span>{result.functionalBlocks.length}</span>
         </div>
         <div className="blockGrid">
@@ -275,21 +291,21 @@ export default function ResultPage() {
 
       <section>
         <div className="sectionTitle">
-          <h2>BoM</h2>
+          <h2>BoM / перечень элементов</h2>
           <span>{result.bom.length}</span>
         </div>
         <div className="tableWrap">
           <table>
             <thead>
               <tr>
-                <th>Reference</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Value</th>
-                <th>Package</th>
-                <th>Footprint</th>
-                <th>Qty</th>
-                <th>Block</th>
+                <th>Поз.</th>
+                <th>Наименование</th>
+                <th>Тип</th>
+                <th>Номинал</th>
+                <th>Корпус</th>
+                <th>Посадочное место</th>
+                <th>Кол-во</th>
+                <th>Блок</th>
               </tr>
             </thead>
             <tbody>
@@ -312,7 +328,7 @@ export default function ResultPage() {
 
       <section>
         <div className="sectionTitle">
-          <h2>Warnings</h2>
+          <h2>Инженерные предупреждения</h2>
           <span>{result.warnings.length}</span>
         </div>
         <ul className="warningList">
@@ -327,7 +343,7 @@ export default function ResultPage() {
 
       <section>
         <div className="sectionTitle">
-          <h2>Check Results</h2>
+          <h2>Результаты проверок</h2>
           <span>{result.checkResults.length}</span>
         </div>
         <div className="checksList">
@@ -347,7 +363,7 @@ export default function ResultPage() {
       {markdownReport && (
         <section>
           <div className="sectionTitle">
-            <h2>Markdown Report</h2>
+            <h2>Markdown-отчёт</h2>
             <span>.md</span>
           </div>
           <pre className="markdownPreview">{markdownReport}</pre>

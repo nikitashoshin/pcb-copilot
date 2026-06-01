@@ -17,96 +17,96 @@ public sealed class ProjectSpecValidator
         {
             issues.Add(Error(
                 "PROJECT_NAME_REQUIRED",
-                "Project name must not be empty.",
-                "Enter a clear project name before generating the architecture."));
+                "Название проекта не должно быть пустым.",
+                "Введите понятное название проекта перед формированием архитектуры."));
         }
 
         if (string.IsNullOrWhiteSpace(power.Input))
         {
             issues.Add(Error(
                 "POWER_INPUT_REQUIRED",
-                "Power input must not be empty.",
-                "Specify the input supply, for example 24V DC for the MVP scenario."));
+                "Входное питание не должно быть пустым.",
+                "Укажите входное питание, например 24V DC для MVP-сценария."));
         }
 
         if (IsSame(power.Input, "24V DC") && !power.Protection)
         {
             issues.Add(Warning(
                 "24V_POWER_PROTECTION_RECOMMENDED",
-                "24V DC input should include reverse polarity or input protection.",
-                "Enable protection or explicitly review reverse polarity, surge, EFT and ESD protection."));
+                "Для входа 24V DC рекомендуется защита питания.",
+                "Включите защиту или отдельно проверьте переполюсовку, импульсные помехи, EFT и ESD."));
         }
 
         if (IsSame(mcu.Family, "STM32") && !ContainsValue(power.Outputs, "3.3V"))
         {
             issues.Add(Error(
                 "STM32_REQUIRES_3V3",
-                "STM32 requires a 3.3V power rail.",
-                "Add 3.3V to power.outputs before generating the architecture."));
+                "Для STM32 требуется линия питания 3.3V.",
+                "Добавьте 3.3V во внутренние линии питания перед формированием архитектуры."));
         }
 
         if (IsSame(mcu.Family, "STM32") && !IsSame(mcu.Programming, "SWD"))
         {
             issues.Add(Warning(
                 "STM32_SWD_RECOMMENDED",
-                "STM32 projects should normally expose SWD for programming and debugging.",
-                "Use SWD unless the project has a documented alternative programming path."));
+                "Для STM32 желательно вывести SWD для прошивки и отладки.",
+                "Используйте SWD, если для проекта не описан другой способ программирования."));
         }
 
         if (board.WidthMm <= 0)
         {
             issues.Add(Error(
                 "BOARD_WIDTH_REQUIRED",
-                "Board width must be greater than zero.",
-                "Set board.widthMm to a positive value."));
+                "Ширина платы должна быть больше нуля.",
+                "Укажите положительное значение ширины платы."));
         }
 
         if (board.HeightMm <= 0)
         {
             issues.Add(Error(
                 "BOARD_HEIGHT_REQUIRED",
-                "Board height must be greater than zero.",
-                "Set board.heightMm to a positive value."));
+                "Высота платы должна быть больше нуля.",
+                "Укажите положительное значение высоты платы."));
         }
 
         if (board.Layers is not (2 or 4))
         {
             issues.Add(Error(
                 "BOARD_LAYERS_UNSUPPORTED",
-                "Board layer count must be 2 or 4 for the MVP.",
-                "Use 2 layers for the first demonstration scenario, or 4 layers if the design requires it."));
+                "Для MVP количество слоёв должно быть 2 или 4.",
+                "Используйте 2 слоя для первого демонстрационного сценария или 4 слоя при необходимости."));
         }
 
         if (ContainsValue(spec.Interfaces, "RS-485"))
         {
             issues.Add(Warning(
                 "RS485_LINE_REVIEW_REQUIRED",
-                "RS-485 requires review of termination, biasing and line protection.",
-                "Check 120 Ohm termination, bias resistors, ESD/TVS protection and whether isolation is required."));
+                "RS-485 требует проверки терминатора, biasing и защиты линии.",
+                "Проверьте терминатор 120 Ом, bias-резисторы, ESD/TVS-защиту и необходимость развязки."));
         }
 
         if (digitalInputs.Count > 0 && IsSame(digitalInputs.Voltage, "24V"))
         {
             issues.Add(Warning(
                 "DIGITAL_INPUT_24V_REVIEW_REQUIRED",
-                "24V digital inputs require level adaptation and protection.",
-                "Check input current, filtering, voltage clamping, isolation need and STM32 logic-level compatibility."));
+                "Дискретные входы 24V требуют согласования уровня и защиты.",
+                "Проверьте входной ток, фильтрацию, ограничение напряжения, необходимость развязки и совместимость с логикой STM32."));
         }
 
         if (relayOutputs.Count > 0)
         {
             issues.Add(Warning(
                 "RELAY_OUTPUT_REVIEW_REQUIRED",
-                "Relay outputs require load current, coil protection and clearance review.",
-                "Check contact rating, load type, flyback protection, creepage and clearance before production."));
+                "Релейные выходы требуют проверки тока нагрузки, защиты катушки и зазоров.",
+                "Проверьте номинал контактов, тип нагрузки, flyback-защиту, пути утечки и зазоры перед производством."));
         }
 
         if (IsSame(spec.Environment, "industrial"))
         {
             issues.Add(Warning(
                 "INDUSTRIAL_ENVIRONMENT_REVIEW_REQUIRED",
-                "Industrial environment requires EMC, ESD and EFT review.",
-                "Review input protection, interface protection, filtering, grounding and layout before production."));
+                "Промышленная среда требует проверки EMC, ESD и EFT.",
+                "Проверьте входную защиту, защиту интерфейсов, фильтрацию, заземление и топологию платы перед производством."));
         }
 
         return new ValidationResult

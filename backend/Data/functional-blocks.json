@@ -46,7 +46,7 @@
       {
         "code": "CHECK_24V_SURGE_PROTECTION",
         "severity": "Warning",
-        "message": "For 24V power input, check protection against surge, EFT and impulse noise.",
+        "message": "Для входного питания 24V проверьте защиту от surge, EFT и импульсных помех.",
         "relatedBlockCode": "input_power_24v"
       }
     ]
@@ -296,13 +296,13 @@
       {
         "code": "CHECK_RS485_TERMINATION_120R",
         "severity": "Warning",
-        "message": "For RS-485, check whether a 120 Ohm termination resistor is required.",
+        "message": "Для RS-485 проверьте, нужен ли терминальный резистор 120 Ом.",
         "relatedBlockCode": "rs485_interface"
       },
       {
         "code": "CHECK_RS485_GALVANIC_ISOLATION",
         "severity": "Warning",
-        "message": "For RS-485, check whether galvanic isolation is required.",
+        "message": "Для RS-485 проверьте, требуется ли гальваническая развязка.",
         "relatedBlockCode": "rs485_interface"
       }
     ]
@@ -417,7 +417,7 @@
       {
         "code": "CHECK_RELAY_LOAD_CURRENT",
         "severity": "Warning",
-        "message": "For relay output, check load current and voltage before production.",
+        "message": "Для релейного выхода проверьте ток и напряжение нагрузки перед производством.",
         "relatedBlockCode": "relay_output"
       }
     ]

@@ -83,6 +83,16 @@ export default function NewProjectPage() {
     };
   }
 
+  function severityLabel(severity: string) {
+    const labels: Record<string, string> = {
+      Info: "Информация",
+      Warning: "Предупреждение",
+      Error: "Ошибка",
+    };
+
+    return labels[severity] ?? severity;
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
@@ -95,7 +105,7 @@ export default function NewProjectPage() {
       setValidationIssues(validation.issues);
 
       if (!validation.isValid) {
-        setError("Исправьте ошибки в ProjectSpec перед формированием архитектуры.");
+        setError("Исправьте ошибки в исходных требованиях перед формированием архитектуры.");
         return;
       }
 
@@ -103,7 +113,7 @@ export default function NewProjectPage() {
       saveArchitectureResult(result);
       router.push("/result");
     } catch {
-      setError("Backend недоступен. Проверьте, что .NET API запущен на http://127.0.0.1:5065.");
+      setError("Серверная часть недоступна. Проверьте, что .NET API запущен на http://127.0.0.1:5065.");
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +122,7 @@ export default function NewProjectPage() {
   return (
     <section className="pageShell">
       <div className="sectionHeader">
-        <p className="eyebrow">ProjectSpec</p>
+        <p className="eyebrow">Исходные требования</p>
         <h1>Создание проекта</h1>
         <p>
           Форма заполнена первым демонстрационным сценарием MVP: промышленный контроллер
@@ -123,7 +133,7 @@ export default function NewProjectPage() {
       <form className="formPanel" onSubmit={handleSubmit}>
         <div className="formGrid">
           <label>
-            <span>projectName</span>
+            <span>Название проекта</span>
             <input
               value={form.projectName}
               onChange={(event) => updateField("projectName", event.target.value)}
@@ -131,7 +141,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>inputVoltage</span>
+            <span>Входное питание</span>
             <input
               value={form.inputVoltage}
               onChange={(event) => updateField("inputVoltage", event.target.value)}
@@ -139,7 +149,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>mcuFamily</span>
+            <span>Семейство MCU</span>
             <input
               value={form.mcuFamily}
               onChange={(event) => updateField("mcuFamily", event.target.value)}
@@ -147,7 +157,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>interfaces</span>
+            <span>Интерфейсы</span>
             <input
               value={form.interfaces}
               onChange={(event) => updateField("interfaces", event.target.value)}
@@ -155,7 +165,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>digitalInputsCount</span>
+            <span>Количество дискретных входов</span>
             <input
               min={0}
               type="number"
@@ -165,7 +175,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>relayOutputsCount</span>
+            <span>Количество релейных выходов</span>
             <input
               min={0}
               type="number"
@@ -175,7 +185,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>boardWidthMm</span>
+            <span>Ширина платы, мм</span>
             <input
               min={1}
               type="number"
@@ -185,7 +195,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>boardHeightMm</span>
+            <span>Высота платы, мм</span>
             <input
               min={1}
               type="number"
@@ -195,7 +205,7 @@ export default function NewProjectPage() {
           </label>
 
           <label>
-            <span>layers</span>
+            <span>Количество слоёв</span>
             <input
               min={1}
               type="number"
@@ -209,12 +219,12 @@ export default function NewProjectPage() {
 
         {validationIssues.length > 0 && (
           <div className="validationPanel">
-            <h2>Validation Result</h2>
+            <h2>Результат проверки требований</h2>
             <ul className="validationList">
               {validationIssues.map((issue) => (
                 <li className={`validationItem severity${issue.severity}`} key={issue.code}>
                   <strong>
-                    {issue.severity}: {issue.code}
+                    {severityLabel(issue.severity)}: {issue.code}
                   </strong>
                   <span>{issue.message}</span>
                   <small>{issue.recommendation}</small>

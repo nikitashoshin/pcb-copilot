@@ -45,30 +45,30 @@ public sealed class MarkdownReportGenerator
         var relayOutputs = spec.RelayOutputs ?? new RelayOutputsSpec();
         var board = spec.Board ?? new BoardSpec();
 
-        builder.AppendLine($"- Project name: {Cell(spec.ProjectName)}");
-        builder.AppendLine($"- Device type: {Cell(spec.DeviceType)}");
-        builder.AppendLine($"- Power input: {Cell(power.Input)}");
-        builder.AppendLine($"- Power outputs: {Cell(string.Join(", ", power.Outputs))}");
-        builder.AppendLine($"- Power protection: {(power.Protection ? "enabled" : "disabled")}");
-        builder.AppendLine($"- MCU: {Cell(mcu.Family)}");
-        builder.AppendLine($"- Programming: {Cell(mcu.Programming)}");
-        builder.AppendLine($"- Interfaces: {Cell(string.Join(", ", spec.Interfaces))}");
-        builder.AppendLine($"- Digital inputs: {digitalInputs.Count} x {Cell(digitalInputs.Voltage)}");
-        builder.AppendLine($"- Relay outputs: {relayOutputs.Count}");
-        builder.AppendLine($"- Indication: {Cell(string.Join(", ", spec.Indication))}");
-        builder.AppendLine($"- Board: {board.WidthMm} x {board.HeightMm} mm, {board.Layers} layers");
-        builder.AppendLine($"- Environment: {Cell(spec.Environment)}");
+        builder.AppendLine($"- Название проекта: {Cell(spec.ProjectName)}");
+        builder.AppendLine($"- Тип устройства: {Cell(spec.DeviceType)}");
+        builder.AppendLine($"- Входное питание: {Cell(power.Input)}");
+        builder.AppendLine($"- Внутренние линии питания: {Cell(string.Join(", ", power.Outputs))}");
+        builder.AppendLine($"- Защита питания: {(power.Protection ? "включена" : "выключена")}");
+        builder.AppendLine($"- Микроконтроллер: {Cell(mcu.Family)}");
+        builder.AppendLine($"- Интерфейс программирования: {Cell(mcu.Programming)}");
+        builder.AppendLine($"- Интерфейсы: {Cell(string.Join(", ", spec.Interfaces))}");
+        builder.AppendLine($"- Дискретные входы: {digitalInputs.Count} x {Cell(digitalInputs.Voltage)}");
+        builder.AppendLine($"- Релейные выходы: {relayOutputs.Count}");
+        builder.AppendLine($"- Индикация: {Cell(string.Join(", ", spec.Indication))}");
+        builder.AppendLine($"- Плата: {board.WidthMm} x {board.HeightMm} мм, слоёв: {board.Layers}");
+        builder.AppendLine($"- Среда применения: {Cell(spec.Environment)}");
         builder.AppendLine();
     }
 
     private static void AppendFunctionalBlocks(StringBuilder builder, ArchitectureResult architecture)
     {
-        builder.AppendLine("## Functional Blocks");
+        builder.AppendLine("## Функциональные блоки");
         builder.AppendLine();
 
         if (architecture.FunctionalBlocks.Count == 0)
         {
-            builder.AppendLine("Functional blocks are not selected.");
+            builder.AppendLine("Функциональные блоки не выбраны.");
             builder.AppendLine();
             return;
         }
@@ -85,7 +85,7 @@ public sealed class MarkdownReportGenerator
     {
         builder.AppendLine("## BoM");
         builder.AppendLine();
-        builder.AppendLine("| Reference | Name | Type | Value | Package | Footprint | Quantity | BlockCode | Comment |");
+        builder.AppendLine("| Поз. | Наименование | Тип | Номинал | Корпус | Footprint | Кол-во | BlockCode | Комментарий |");
         builder.AppendLine("| --- | --- | --- | --- | --- | --- | ---: | --- | --- |");
 
         foreach (var item in architecture.Bom)
@@ -99,19 +99,19 @@ public sealed class MarkdownReportGenerator
 
     private static void AppendWarnings(StringBuilder builder, ArchitectureResult architecture)
     {
-        builder.AppendLine("## Engineering Warnings");
+        builder.AppendLine("## Инженерные предупреждения");
         builder.AppendLine();
 
         if (architecture.Warnings.Count == 0)
         {
-            builder.AppendLine("No engineering warnings were generated.");
+            builder.AppendLine("Инженерные предупреждения не сформированы.");
             builder.AppendLine();
             return;
         }
 
         foreach (var warning in architecture.Warnings)
         {
-            builder.AppendLine($"- **{EscapeInline(warning.Severity)}** `{warning.Code}`: {EscapeInline(warning.Message)}");
+            builder.AppendLine($"- **{SeverityCell(warning.Severity)}** `{warning.Code}`: {EscapeInline(warning.Message)}");
         }
 
         builder.AppendLine();
@@ -119,15 +119,15 @@ public sealed class MarkdownReportGenerator
 
     private static void AppendCheckResults(StringBuilder builder, ArchitectureResult architecture)
     {
-        builder.AppendLine("## Check Results");
+        builder.AppendLine("## Результаты проверок");
         builder.AppendLine();
-        builder.AppendLine("| Code | Title | Severity | Status | Message | Recommendation |");
+        builder.AppendLine("| Код | Проверка | Уровень | Статус | Сообщение | Рекомендация |");
         builder.AppendLine("| --- | --- | --- | --- | --- | --- |");
 
         foreach (var check in architecture.CheckResults)
         {
             builder.AppendLine(
-                $"| {Cell(check.Code)} | {Cell(check.Title)} | {Cell(check.Severity)} | {Cell(check.Status)} | {Cell(check.Message)} | {Cell(check.Recommendation)} |");
+                $"| {Cell(check.Code)} | {Cell(check.Title)} | {SeverityCell(check.Severity)} | {StatusCell(check.Status)} | {Cell(check.Message)} | {Cell(check.Recommendation)} |");
         }
 
         builder.AppendLine();
@@ -140,7 +140,7 @@ public sealed class MarkdownReportGenerator
                 string.Equals(check.Severity, "Warning", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(check.Severity, "Error", StringComparison.OrdinalIgnoreCase));
 
-        builder.AppendLine("## Conclusion");
+        builder.AppendLine("## Заключение");
         builder.AppendLine();
         builder.AppendLine(
             reviewRequired
@@ -151,6 +151,29 @@ public sealed class MarkdownReportGenerator
     private static string Cell(string? value)
     {
         return EscapeInline(string.IsNullOrWhiteSpace(value) ? "-" : value);
+    }
+
+    private static string SeverityCell(string? severity)
+    {
+        return severity switch
+        {
+            "Info" => "Информация",
+            "Warning" => "Предупреждение",
+            "Error" => "Ошибка",
+            _ => Cell(severity)
+        };
+    }
+
+    private static string StatusCell(string? status)
+    {
+        return status switch
+        {
+            "Passed" => "Пройдено",
+            "ReviewRequired" => "Требует проверки",
+            "Failed" => "Не пройдено",
+            "NotApplicable" => "Не применимо",
+            _ => Cell(status)
+        };
     }
 
     private static string EscapeInline(string? value)
