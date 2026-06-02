@@ -66,3 +66,19 @@ export async function generateMarkdownReport(result: ArchitectureResult): Promis
 
   return response.text();
 }
+
+export async function exportProjectPackage(result: ArchitectureResult): Promise<Blob> {
+  const response = await fetch(`${API_BASE_URL}/api/projects/export-package`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(result),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Backend returned ${response.status}`);
+  }
+
+  return response.blob();
+}

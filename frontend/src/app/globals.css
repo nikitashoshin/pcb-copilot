@@ -240,6 +240,13 @@ input {
   margin-top: 20px;
 }
 
+.exportHint {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 12px 0 0;
+  max-width: 760px;
+}
+
 .formGrid {
   display: grid;
   gap: 18px;

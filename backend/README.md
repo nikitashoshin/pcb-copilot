@@ -2,7 +2,7 @@
 
 .NET 8 Web API для MVP PCB Copilot. Backend принимает `ProjectSpec`, подбирает функциональные блоки для первого сценария, формирует черновой BoM, инженерные предупреждения и базовые проверки.
 
-В этом MVP нет базы данных, авторизации, генерации KiCad-файлов и автоматической трассировки.
+В этом MVP нет базы данных, авторизации, production-ready генерации KiCad-файлов и автоматической трассировки. ZIP-экспорт содержит только черновые placeholder-заготовки для ручной инженерной доработки.
 
 ## Запуск
 
@@ -25,6 +25,9 @@ http://127.0.0.1:5065/swagger
 - `POST /api/projects/generate-architecture` - принимает `ProjectSpec` и возвращает `ArchitectureResult`.
 - `POST /api/projects/export-bom-csv` - принимает `ArchitectureResult` и возвращает BoM в CSV.
 - `POST /api/projects/generate-report` - принимает `ArchitectureResult` и возвращает Markdown-отчет.
+- `POST /api/projects/export-package` - принимает `ArchitectureResult` и возвращает ZIP-пакет с `project-spec.json`, `bom.csv`, `engineering-report.md` и черновыми KiCad-заготовками.
+
+ZIP-пакет содержит placeholder-файлы KiCad. Это не готовая схема, не готовая трассировка и не производственный проект платы.
 
 ## Справочник блоков
 

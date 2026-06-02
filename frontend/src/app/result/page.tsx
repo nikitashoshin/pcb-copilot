@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { exportBomCsv, generateMarkdownReport } from "@/lib/api";
+import { exportBomCsv, exportProjectPackage, generateMarkdownReport } from "@/lib/api";
 import { loadArchitectureResult } from "@/lib/result-storage";
 import type { ArchitectureResult, CheckResult, ProjectSpec } from "@/lib/types";
 
@@ -146,6 +146,7 @@ export default function ResultPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [csvLoading, setCsvLoading] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [markdownReport, setMarkdownReport] = useState<string | null>(null);
 
@@ -206,6 +207,24 @@ export default function ResultPage() {
     }
   }
 
+  async function handleDownloadZipPackage() {
+    if (!result) {
+      return;
+    }
+
+    setZipLoading(true);
+    setExportError(null);
+
+    try {
+      const zipPackage = await exportProjectPackage(result);
+      downloadBlob(zipPackage, "pcb-copilot-industrial-stm32-controller.zip");
+    } catch {
+      setExportError("Не удалось скачать ZIP-пакет проекта. Проверьте, что серверная часть доступна на 127.0.0.1:5065.");
+    } finally {
+      setZipLoading(false);
+    }
+  }
+
   if (!isLoaded) {
     return (
       <section className="pageShell">
@@ -257,7 +276,19 @@ export default function ResultPage() {
           >
             Скачать Markdown
           </button>
+          <button
+            className="secondaryButton"
+            disabled={zipLoading}
+            onClick={handleDownloadZipPackage}
+            type="button"
+          >
+            {zipLoading ? "Подготовка ZIP..." : "Скачать ZIP-пакет проекта"}
+          </button>
         </div>
+        <p className="exportHint">
+          ZIP содержит project-spec.json, BoM, Markdown-отчёт и черновые заготовки KiCad-файлов.
+          Это не готовая плата.
+        </p>
         {exportError && <div className="errorBox">{exportError}</div>}
       </div>
 

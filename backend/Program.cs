@@ -19,6 +19,7 @@ builder.Services.AddSingleton<ArchitectureGenerator>();
 builder.Services.AddSingleton<ProjectSpecValidator>();
 builder.Services.AddSingleton<BomCsvExporter>();
 builder.Services.AddSingleton<MarkdownReportGenerator>();
+builder.Services.AddSingleton<ProjectPackageExporter>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
@@ -81,5 +82,14 @@ projects.MapPost("/generate-report", (ArchitectureResult architecture, MarkdownR
     .WithName("GenerateReport")
     .Accepts<ArchitectureResult>("application/json")
     .Produces(200, contentType: "text/markdown");
+
+projects.MapPost("/export-package", (ArchitectureResult architecture, ProjectPackageExporter exporter) =>
+    {
+        var package = exporter.Export(architecture);
+        return Results.File(package, "application/zip", "pcb-copilot-industrial-stm32-controller.zip");
+    })
+    .WithName("ExportProjectPackage")
+    .Accepts<ArchitectureResult>("application/json")
+    .Produces(200, contentType: "application/zip");
 
 app.Run();
