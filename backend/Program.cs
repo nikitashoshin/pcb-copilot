@@ -1,7 +1,6 @@
 using System.Text.Json;
-using System.Text;
-using PcbCopilot.Backend.Models;
-using PcbCopilot.Backend.Services;
+using PcbCopilot.Backend.Endpoints;
+using PcbCopilot.Backend.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,22 +13,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<FunctionalBlockCatalog>();
-builder.Services.AddSingleton<ArchitectureGenerator>();
-builder.Services.AddSingleton<ProjectSpecValidator>();
-builder.Services.AddSingleton<BomCsvExporter>();
-builder.Services.AddSingleton<MarkdownReportGenerator>();
-builder.Services.AddSingleton<ProjectPackageExporter>();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Frontend", policy =>
-    {
-        policy
-            .WithOrigins("http://127.0.0.1:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+builder.Services.AddPcbCopilotServices();
+builder.Services.AddFrontendCors();
 
 var app = builder.Build();
 
@@ -37,59 +22,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors("Frontend");
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
-
-var projects = app.MapGroup("/api/projects")
-    .WithTags("Projects");
-
-projects.MapGet("/sample", () => Results.Ok(ProjectSamples.IndustrialStm32Controller()))
-    .WithName("GetSampleProjectSpec")
-    .Produces<ProjectSpec>();
-
-projects.MapPost("/generate-architecture", (ProjectSpec spec, ArchitectureGenerator generator) =>
-    {
-        var result = generator.Generate(spec);
-        return Results.Ok(result);
-    })
-    .WithName("GenerateArchitecture")
-    .Accepts<ProjectSpec>("application/json")
-    .Produces<ArchitectureResult>();
-
-projects.MapPost("/validate", (ProjectSpec spec, ProjectSpecValidator validator) =>
-    {
-        var result = validator.Validate(spec);
-        return Results.Ok(result);
-    })
-    .WithName("ValidateProjectSpec")
-    .Accepts<ProjectSpec>("application/json")
-    .Produces<ValidationResult>();
-
-projects.MapPost("/export-bom-csv", (ArchitectureResult architecture, BomCsvExporter exporter) =>
-    {
-        var csv = exporter.Export(architecture);
-        var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(csv)).ToArray();
-        return Results.File(bytes, "text/csv; charset=utf-8", "pcb-copilot-bom.csv");
-    })
-    .WithName("ExportBomCsv")
-    .Accepts<ArchitectureResult>("application/json")
-    .Produces(200, contentType: "text/csv");
-
-projects.MapPost("/generate-report", (ArchitectureResult architecture, MarkdownReportGenerator generator) =>
-    {
-        var markdown = generator.Generate(architecture);
-        return Results.Text(markdown, "text/markdown; charset=utf-8");
-    })
-    .WithName("GenerateReport")
-    .Accepts<ArchitectureResult>("application/json")
-    .Produces(200, contentType: "text/markdown");
-
-projects.MapPost("/export-package", (ArchitectureResult architecture, ProjectPackageExporter exporter) =>
-    {
-        var package = exporter.Export(architecture);
-        return Results.File(package, "application/zip", "pcb-copilot-industrial-stm32-controller.zip");
-    })
-    .WithName("ExportProjectPackage")
-    .Accepts<ArchitectureResult>("application/json")
-    .Produces(200, contentType: "application/zip");
+app.MapProjectEndpoints();
 
 app.Run();

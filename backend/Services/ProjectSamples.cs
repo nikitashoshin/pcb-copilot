@@ -2,6 +2,10 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Хранит эталонные входные данные для демонстрационных сценариев MVP.
+/// Эти данные не являются результатом генерации и используются как sample ProjectSpec.
+/// </summary>
 public static class ProjectSamples
 {
     public static ProjectSpec IndustrialStm32Controller() => new()

@@ -2,6 +2,11 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Формирует архитектурный черновик платы из исходных требований проекта.
+/// Отвечает за выбор функциональных блоков из справочника, построение BoM,
+/// инженерные предупреждения и первичные результаты проверок.
+/// </summary>
 public sealed class ArchitectureGenerator
 {
     private readonly FunctionalBlockCatalog _catalog;
@@ -11,6 +16,10 @@ public sealed class ArchitectureGenerator
         _catalog = catalog;
     }
 
+    /// <summary>
+    /// Возвращает детерминированный результат MVP-генерации без обращения к БД,
+    /// AI API или внешним источникам.
+    /// </summary>
     public ArchitectureResult Generate(ProjectSpec spec)
     {
         var selections = SelectFunctionalBlocks(spec);
@@ -41,6 +50,8 @@ public sealed class ArchitectureGenerator
 
         void Add(string code, int quantity = 1)
         {
+            // Добавляем только коды из MVP-библиотеки functional-blocks.json.
+            // Если для сценария нужен новый узел, его сначала нужно описать в справочнике.
             if (quantity <= 0)
             {
                 return;
@@ -122,6 +133,8 @@ public sealed class ArchitectureGenerator
             var block = _catalog.Find(selection.Code);
             if (block is null)
             {
+                // Отсутствующий блок не заменяется "похожим" автоматически:
+                // инженер должен явно расширить библиотеку блоков и проверить состав узла.
                 warnings.Add(new EngineeringWarning
                 {
                     Code = "FUNCTIONAL_BLOCK_NOT_FOUND",
@@ -211,6 +224,8 @@ public sealed class ArchitectureGenerator
             });
         }
 
+        // Результат MVP является архитектурным черновиком: он помогает начать работу,
+        // но не снимает инженерную проверку схемы, BoM, footprint и защит.
         warnings.Add(new EngineeringWarning
         {
             Code = "ENGINEERING_REVIEW_REQUIRED",

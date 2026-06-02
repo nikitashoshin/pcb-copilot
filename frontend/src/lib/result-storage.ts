@@ -1,8 +1,10 @@
-import type { ArchitectureResult } from "./types";
+import type { ArchitectureResult } from "@/types/project";
 
 const RESULT_STORAGE_KEY = "pcb-copilot.architecture-result";
 
 export function saveArchitectureResult(result: ArchitectureResult) {
+  // В MVP результат временно хранится в sessionStorage между /new-project и /result.
+  // Это не заменяет будущую БД и не предназначено для долговременного хранения проектов.
   window.sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
 }
 

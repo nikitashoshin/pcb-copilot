@@ -2,8 +2,17 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
-public sealed class ProjectSpecValidator
+/// <summary>
+/// Проверяет исходные требования проекта до генерации архитектуры.
+/// Ошибки блокируют сценарий, предупреждения оставляют генерацию доступной,
+/// но явно подсвечивают инженерные риски.
+/// </summary>
+public sealed class ProjectValidator
 {
+    /// <summary>
+    /// Выполняет базовые MVP-проверки ProjectSpec и возвращает список проблем
+    /// в формате, который напрямую отображается frontend.
+    /// </summary>
     public ValidationResult Validate(ProjectSpec spec)
     {
         var issues = new List<ValidationIssue>();

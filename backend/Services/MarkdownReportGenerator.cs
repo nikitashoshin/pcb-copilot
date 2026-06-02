@@ -3,11 +3,19 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Генерирует Markdown-отчёт по архитектурному черновику проекта.
+/// Отчёт объединяет требования, блоки, BoM, предупреждения и проверки
+/// в формате, удобном для ручного инженерного review.
+/// </summary>
 public sealed class MarkdownReportGenerator
 {
     private const string Disclaimer =
         "Сгенерированный проект является инженерным черновиком и требует обязательной проверки инженером-электронщиком перед производством.";
 
+    /// <summary>
+    /// Собирает человекочитаемый отчёт без изменения исходного ArchitectureResult.
+    /// </summary>
     public string Generate(ArchitectureResult architecture)
     {
         var builder = new StringBuilder();

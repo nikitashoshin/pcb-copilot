@@ -1,5 +1,9 @@
-import type { ArchitectureResult, ProjectSpec, ValidationResult } from "./types";
+import type { ArchitectureResult, ProjectSpec, ValidationResult } from "@/types/project";
 
+/**
+ * Единая точка frontend для обращения к backend API PCB Copilot.
+ * UI-компоненты не формируют URL endpoints напрямую, чтобы HTTP-контракт был собран здесь.
+ */
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:5065";
 

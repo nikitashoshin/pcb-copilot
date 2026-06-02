@@ -3,6 +3,10 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Загружает справочник функциональных блоков из JSON-файла и предоставляет
+/// доступ к нему по стабильному code. Это граница MVP-библиотеки блоков.
+/// </summary>
 public sealed class FunctionalBlockCatalog
 {
     private readonly Dictionary<string, FunctionalBlockDefinition> _blocks;
@@ -11,6 +15,8 @@ public sealed class FunctionalBlockCatalog
     {
         var filePath = Path.Combine(environment.ContentRootPath, "Data", "functional-blocks.json");
 
+        // MVP опирается на заранее описанную библиотеку функциональных блоков.
+        // Так система не выдумывает схемотехнические узлы вне проверяемого справочника.
         if (!File.Exists(filePath))
         {
             throw new FileNotFoundException("Functional blocks catalog was not found.", filePath);

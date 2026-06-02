@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { generateArchitecture, validateProjectSpec } from "@/lib/api";
 import { saveArchitectureResult } from "@/lib/result-storage";
-import type { ProjectSpec, ValidationIssue } from "@/lib/types";
+import type { ProjectSpec, ValidationIssue } from "@/types/project";
 
 type ProjectFormState = {
   projectName: string;
@@ -30,6 +30,10 @@ const initialFormState: ProjectFormState = {
   layers: 2,
 };
 
+/**
+ * Страница первого MVP-сценария: собирает исходные требования,
+ * запускает backend-валидацию и сохраняет результат генерации для /result.
+ */
 export default function NewProjectPage() {
   const router = useRouter();
   const [form, setForm] = useState<ProjectFormState>(initialFormState);
@@ -101,6 +105,8 @@ export default function NewProjectPage() {
 
     try {
       const spec = toProjectSpec();
+      // Основной пользовательский сценарий: сначала валидируем требования,
+      // затем генерируем архитектурный черновик и переходим к просмотру результата.
       const validation = await validateProjectSpec(spec);
       setValidationIssues(validation.issues);
 

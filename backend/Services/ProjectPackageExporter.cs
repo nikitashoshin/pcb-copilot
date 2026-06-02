@@ -6,6 +6,11 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Собирает ZIP-пакет инженерного черновика проекта.
+/// Пакет объединяет исходные требования, BoM, Markdown-отчёт и draft-заготовки KiCad,
+/// но не создаёт production-ready схему или разведённую плату.
+/// </summary>
 public sealed class ProjectPackageExporter
 {
     private const string ProjectFileName = "industrial-stm32-controller";
@@ -25,12 +30,17 @@ public sealed class ProjectPackageExporter
         this.markdownReportGenerator = markdownReportGenerator;
     }
 
+    /// <summary>
+    /// Возвращает ZIP как массив байтов, чтобы endpoint мог отдать его как application/zip.
+    /// </summary>
     public byte[] Export(ArchitectureResult architecture)
     {
         using var stream = new MemoryStream();
 
         using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
         {
+            // ZIP-пакет собирает все артефакты черновика вместе:
+            // исходные требования, BoM, инженерный отчёт и стартовые KiCad-заготовки.
             var projectSpec = architecture.ProjectSpec ?? new ProjectSpec
             {
                 ProjectName = architecture.ProjectName
@@ -54,6 +64,8 @@ public sealed class ProjectPackageExporter
                 markdownReportGenerator.Generate(architecture),
                 emitBom: false);
 
+            // KiCad-файлы пока являются draft-заготовками: они задают структуру проекта
+            // и контекст для ручной работы, но не являются готовой схемой или платой.
             WriteTextEntry(
                 archive,
                 "kicad/README-KiCad.md",

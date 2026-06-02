@@ -3,6 +3,10 @@ using PcbCopilot.Backend.Models;
 
 namespace PcbCopilot.Backend.Services;
 
+/// <summary>
+/// Преобразует BoM из ArchitectureResult в CSV для инженерного просмотра
+/// и дальнейшей ручной доработки списка компонентов.
+/// </summary>
 public sealed class BomCsvExporter
 {
     private static readonly string[] Header =
@@ -18,6 +22,9 @@ public sealed class BomCsvExporter
         "Comment"
     };
 
+    /// <summary>
+    /// Формирует CSV с фиксированным набором колонок, ожидаемым frontend и документацией MVP.
+    /// </summary>
     public string Export(ArchitectureResult architecture)
     {
         var builder = new StringBuilder();
