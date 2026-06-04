@@ -1,29 +1,57 @@
 import type { CheckResult } from "@/types/project";
 import { severityClass, statusLabel } from "./result-formatting";
 
+const localizedCheckContent: Record<
+  string,
+  { title: string; message: string; recommendation: string }
+> = {
+  COMPONENTS_REQUIRE_FOOTPRINTS: {
+    title: "Для компонентов должны быть назначены посадочные места",
+    message: "Во всех строках перечня элементов заполнено поле «Посадочное место».",
+    recommendation: "Назначьте и проверьте посадочные места KiCad перед подготовкой проекта.",
+  },
+};
+
+function displayContent(check: CheckResult) {
+  return (
+    localizedCheckContent[check.code] ?? {
+      title: check.title,
+      message: check.message,
+      recommendation: check.recommendation ?? "",
+    }
+  );
+}
+
 /**
- * Отображает результаты первичных проверок архитектуры.
- * Статусы не являются финальным инженерным заключением и показывают, что нужно проверить вручную.
+ * Отображает подробные результаты первичных проверок архитектуры.
+ * Статусы помогают ориентироваться в черновике, но не являются финальным инженерным заключением.
  */
 export function CheckResultsList({ checkResults }: { checkResults: CheckResult[] }) {
   return (
-    <section>
-      <div className="sectionTitle">
-        <h2>Результаты проверок</h2>
+    <div className="detailPanel">
+      <div className="subsectionHeading">
+        <h3>Результаты проверок</h3>
         <span>{checkResults.length}</span>
       </div>
       <div className="checksList">
-        {checkResults.map((check) => (
-          <article className={`checkItem ${severityClass(check.severity)}`} key={check.code}>
-            <div>
-              <h3>{check.title}</h3>
-              <p>{check.message}</p>
-              {check.recommendation && <small>{check.recommendation}</small>}
-            </div>
-            <span>{statusLabel(check)}</span>
-          </article>
-        ))}
+        {checkResults.map((check) => {
+          const content = displayContent(check);
+
+          return (
+            <article className={`checkItem ${severityClass(check.severity)}`} key={check.code}>
+              <div>
+                <div className="checkTitleRow">
+                  <h4>{content.title}</h4>
+                  <code>{check.code}</code>
+                </div>
+                <p>{content.message}</p>
+                {content.recommendation && <small>{content.recommendation}</small>}
+              </div>
+              <span>{statusLabel(check)}</span>
+            </article>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 }

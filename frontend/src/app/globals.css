@@ -28,6 +28,7 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
+  overflow-x: hidden;
 }
 
 a {
@@ -324,172 +325,424 @@ input {
   line-height: 1.45;
 }
 
-.resultStack {
+.resultDashboard {
   display: grid;
-  gap: 32px;
+  gap: 0;
   grid-template-columns: minmax(0, 1fr);
+  max-width: 1280px;
+  padding-top: 36px;
 }
 
-.sectionTitle {
+.dashboardSection,
+.resultHeader {
+  min-width: 0;
+}
+
+.resultHeader {
+  display: grid;
+  gap: 24px;
+}
+
+.resultOverview {
+  display: grid;
+  gap: 24px;
+}
+
+.dashboardSection:not(.resultOverview) {
+  margin-top: 0;
+}
+
+.resultHero {
   align-items: center;
   display: flex;
-  gap: 12px;
+  gap: 24px;
   justify-content: space-between;
-  margin-bottom: 14px;
 }
 
-.sectionTitle h2 {
-  font-size: 24px;
+.resultHero h1 {
+  font-size: 38px;
+  line-height: 1.15;
+  margin: 8px 0 0;
+}
+
+.reviewStatusBadge {
+  background: #fff4df;
+  border: 1px solid #edcf91;
+  border-radius: 999px;
+  color: var(--warning);
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.resultOverview .disclaimer {
   margin: 0;
 }
 
-.sectionTitle span {
-  background: var(--surface-muted);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-  min-width: 34px;
-  padding: 6px 10px;
-  text-align: center;
-}
-
-.blockGrid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.requirementsGrid {
+.resultPageNav {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
+  margin: 20px 0 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.resultTabs {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.resultTabButton {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 750;
+  min-height: 36px;
+  padding: 8px 10px;
+}
+
+.resultTabButton:hover {
+  background: var(--surface-muted);
+  color: var(--primary-dark);
+}
+
+.resultTabButton[aria-selected="true"] {
+  background: #e8f3f1;
+  border-color: rgba(33, 107, 98, 0.24);
+  color: var(--primary-dark);
+}
+
+.resultTabPanel {
+  margin-top: 22px;
+  min-width: 0;
+}
+
+.overviewDashboard {
+  display: grid;
+  gap: 28px;
+}
+
+.summaryMetrics {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.summaryMetric {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--primary);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 16px;
+}
+
+.summaryMetric strong {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.summaryMetric span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.summaryMetriccritical {
+  border-top-color: var(--error);
+}
+
+.summaryMetricdecision {
+  border-top-color: var(--warning);
+}
+
+.summaryMetricrecommendation {
+  border-top-color: var(--info);
+}
+
+.attentionPanel {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  padding: 22px 0;
+}
+
+.nextActionsPanel {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+
+.overviewSecondaryGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.quickExportPanel {
+  min-width: 0;
+}
+
+.quickExportPanel .exportCard {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compactErrorBox {
+  margin-top: 12px;
+}
+
+.attentionHeading,
+.dashboardSectionHeading,
+.subsectionHeading,
+.riskGroupHeading,
+.blockCategoryHeading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.attentionHeading {
+  margin-bottom: 14px;
+}
+
+.attentionHeading h2,
+.dashboardSectionHeading h2,
+.subsectionHeading h3,
+.riskGroupHeading h3,
+.blockCategoryHeading h3 {
+  margin: 0;
+}
+
+.attentionHeading h2 {
+  font-size: 22px;
+}
+
+.attentionHeading p {
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 5px 0 0;
+}
+
+.attentionHeading > span,
+.dashboardSectionHeading > span,
+.subsectionHeading > span,
+.riskGroupHeading > span,
+.blockCategoryHeading > span {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--muted);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  min-width: 28px;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.attentionList {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.attentionItem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--info);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.attentionItem > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.attentionItem strong {
+  font-size: 14px;
+}
+
+.attentionItem p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.attentionItemcritical {
+  border-left-color: var(--error);
+}
+
+.attentionItemclarification,
+.attentionItemdecision {
+  border-left-color: var(--warning);
+}
+
+.mutedText {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dashboardSectionHeading {
+  margin-bottom: 18px;
+}
+
+.dashboardSectionHeading h2 {
+  font-size: 26px;
+}
+
+.sectionKicker {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.sectionDescription {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  max-width: 760px;
+}
+
+.detailsPanel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.detailsPanel summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 800;
+  gap: 12px;
+  justify-content: space-between;
+  list-style: none;
+  padding: 14px 16px;
+}
+
+.detailsPanel summary::-webkit-details-marker {
+  display: none;
+}
+
+.detailsPanel summary::after {
+  color: var(--muted);
+  content: "+";
+  font-size: 18px;
+  margin-left: auto;
+}
+
+.detailsPanel[open] summary::after {
+  content: "−";
+}
+
+.detailsPanel summary b {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 28px;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.requirementsPanel {
+  margin-top: -8px;
+}
+
+.requirementsPanel > .mutedText {
+  padding: 0 16px 16px;
+}
+
+.requirementsGrid {
+  border-top: 1px solid var(--line);
   display: grid;
   gap: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin: 0;
-  overflow: hidden;
 }
 
 .requirementsGrid div {
   border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
   min-width: 0;
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
 
 .requirementsGrid dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .requirementsGrid dd {
+  font-size: 14px;
   margin: 0;
   overflow-wrap: anywhere;
 }
 
-.engineeringReviewSection {
+.reviewRiskGrid {
   display: grid;
-  gap: 26px;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.reviewNotice {
-  background: #eef6ff;
-  border: 1px solid #c9def2;
-  border-left: 4px solid var(--info);
-  border-radius: 8px;
-  color: #174f7d;
-  line-height: 1.55;
-  margin: 0;
-  padding: 14px 16px;
-}
-
-.reviewSubsection {
+.reviewRiskGroup,
+.reviewSubsection,
+.resourcePanel,
+.detailPanel,
+.reportPreviewPanel {
   min-width: 0;
 }
 
-.reviewSubsection h3 {
-  font-size: 19px;
-  margin: 0 0 12px;
+.riskGroupHeading,
+.subsectionHeading,
+.blockCategoryHeading {
+  margin-bottom: 10px;
 }
 
-.inlineCode {
-  color: var(--muted);
-  display: block;
-  font-size: 12px;
-  margin-top: 5px;
+.riskGroupHeading h3,
+.subsectionHeading h3,
+.blockCategoryHeading h3 {
+  font-size: 16px;
 }
 
-.reviewRationaleList,
+.reviewRiskList,
 .reviewDecisionList,
-.reviewNextSteps {
+.reviewRationaleList,
+.reviewNextSteps,
+.warningList,
+.checksList {
   display: grid;
   gap: 10px;
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.reviewRationaleList li,
-.reviewDecisionList li {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px 16px;
-}
-
-.reviewRationaleList li > div {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.reviewRationaleList code,
-.reviewRiskItem code {
-  background: var(--surface-muted);
-  border-radius: 6px;
-  color: var(--primary-dark);
-  font-size: 12px;
-  padding: 4px 7px;
-}
-
-.reviewRationaleList p,
-.reviewDecisionList p,
-.reviewRiskItem p {
-  color: var(--muted);
-  line-height: 1.5;
-  margin: 8px 0;
-}
-
-.reviewRationaleList small,
-.reviewDecisionList small,
-.reviewRiskItem small {
-  color: var(--muted);
-  display: block;
-  line-height: 1.45;
-}
-
-.reviewRiskGrid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.reviewRiskGroup {
-  min-width: 0;
-}
-
-.reviewRiskGroup h4 {
-  font-size: 14px;
-  margin: 0 0 10px;
-}
-
-.reviewRiskList {
-  display: grid;
-  gap: 10px;
 }
 
 .reviewRiskItem {
@@ -498,13 +751,49 @@ input {
   border-left: 4px solid var(--info);
   border-radius: 8px;
   min-width: 0;
-  padding: 14px;
+  padding: 13px 14px;
+}
+
+.reviewRiskItem strong {
+  font-size: 14px;
+}
+
+.reviewRiskItem p,
+.reviewDecisionList p,
+.reviewRationaleList p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 6px 0;
+}
+
+.reviewRiskItem small,
+.reviewDecisionList small,
+.reviewRationaleList small {
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reviewRiskItem code,
+.reviewDecisionList code,
+.reviewRationaleList code,
+.compactBlockCard code,
+.tableCode,
+.warningList code,
+.checkTitleRow code {
+  color: var(--primary-dark);
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
 }
 
 .reviewRiskItem code {
+  background: var(--surface-muted);
+  border-radius: 6px;
   display: inline-block;
-  margin-top: 10px;
-  overflow-wrap: anywhere;
+  padding: 3px 6px;
 }
 
 .reviewRiskCritical {
@@ -519,16 +808,61 @@ input {
   border-left-color: var(--info);
 }
 
+.reviewDecisionGrid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  margin-top: 24px;
+}
+
+.reviewDecisionList {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  gap: 0;
+}
+
+.reviewDecisionList li {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+}
+
+.reviewDecisionList li:last-child,
+.reviewRationaleList li:last-child {
+  border-bottom: 0;
+}
+
+.reviewDecisionList code {
+  display: block;
+  margin-top: 6px;
+}
+
 .reviewNextSteps {
+  border-top: 1px solid var(--line);
   counter-reset: review-step;
+  gap: 0;
+  padding: 4px 16px 12px;
+}
+
+.overviewNextSteps {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 16px 6px;
 }
 
 .reviewNextSteps li {
   align-items: start;
+  border-bottom: 1px solid var(--line);
   counter-increment: review-step;
   display: grid;
-  gap: 4px 12px;
-  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 3px 10px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  padding: 10px 0;
+}
+
+.reviewNextSteps li:last-child {
+  border-bottom: 0;
 }
 
 .reviewNextSteps li::before {
@@ -538,11 +872,11 @@ input {
   color: var(--primary-dark);
   content: counter(review-step);
   display: flex;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  height: 26px;
+  height: 22px;
   justify-content: center;
-  width: 26px;
+  width: 22px;
 }
 
 .reviewNextSteps strong,
@@ -550,55 +884,274 @@ input {
   grid-column: 2;
 }
 
-.reviewNextSteps span {
-  color: var(--muted);
-  line-height: 1.45;
+.reviewNextSteps strong {
+  font-size: 13px;
 }
 
-.blockCard,
-.checkItem {
+.reviewNextSteps span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.inlineCode {
+  color: var(--muted);
+  display: block;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.statusBadge {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.statusBadgeDecision {
+  background: #fff4df;
+  color: var(--warning);
+}
+
+.parameterCardGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.parameterCard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--warning);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.parameterCardHeader {
+  align-items: start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.parameterCard h3 {
+  font-size: 15px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.parameterCard p,
+.parameterCard small {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.parameterCard code,
+.technicalCodeLine code {
+  color: var(--primary-dark);
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.parameterCard code {
+  background: var(--surface-muted);
+  border-radius: 6px;
+  justify-self: start;
+  padding: 3px 6px;
+}
+
+.technicalCodeLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.resourceGrid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.resourceCardGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.resourceCard,
+.gpioSummaryItem {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 18px;
+  min-width: 0;
 }
 
-.cardMeta {
-  align-items: center;
-  color: var(--muted);
+.resourceCard {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.resourceCardHeader {
+  display: grid;
+  gap: 6px;
+}
+
+.resourceCardHeader h4,
+.gpioSummaryItem h4 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.resourceCardHeader span {
+  color: var(--warning);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.tagList {
   display: flex;
-  font-size: 13px;
-  font-weight: 750;
-  justify-content: space-between;
-  text-transform: uppercase;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.blockCard h3,
-.checkItem h3 {
-  font-size: 18px;
-  margin: 12px 0 8px;
-}
-
-.blockCard p,
-.checkItem p {
-  color: var(--muted);
-  line-height: 1.5;
-  margin: 0 0 14px;
-}
-
-.blockCard code {
+.tagList span {
   background: var(--surface-muted);
-  border-radius: 6px;
-  color: var(--primary-dark);
-  display: inline-block;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.resourceCard p,
+.gpioSummaryItem p,
+.gpioSummaryItem small {
+  color: var(--muted);
   font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.gpioSummaryList {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gpioSummaryItem {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 13px 14px;
+}
+
+.gpioSummaryItem div {
+  display: grid;
+  gap: 5px;
+}
+
+.gpioSummaryItem strong {
+  background: #e8f3f1;
+  border-radius: 999px;
+  color: var(--primary-dark);
+  font-size: 12px;
   padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.blockCategoryList {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.blockCategory {
+  border-top: 1px solid var(--line);
+  min-width: 0;
+  padding-top: 12px;
+}
+
+.compactBlockGrid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compactBlockCard {
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: 11px 12px;
+}
+
+.compactBlockCard h4 {
+  font-size: 14px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.compactBlockCard small {
+  color: var(--muted);
+  display: block;
+  font-size: 11px;
+  line-height: 1.3;
+  margin-top: 3px;
+}
+
+.compactBlockCard > strong {
+  color: var(--primary-dark);
+  font-size: 13px;
+}
+
+.compactBlockCard code {
+  grid-column: 1 / -1;
+}
+
+.blockRationalePanel {
+  margin-top: 20px;
+}
+
+.reviewRationaleList {
+  border-top: 1px solid var(--line);
+  gap: 0;
+  padding: 0 16px 4px;
+}
+
+.reviewRationaleList li {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.reviewRationaleList li > div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tableWrap {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
+  max-width: 100%;
   overflow-x: auto;
 }
 
@@ -608,11 +1161,50 @@ table {
   width: 100%;
 }
 
+.compactTable {
+  min-width: 820px;
+}
+
+.resourceTable {
+  min-width: 760px;
+}
+
+.bomTable {
+  min-width: 1100px;
+  table-layout: fixed;
+}
+
+.bomTable th:nth-child(1) {
+  width: 80px;
+}
+
+.bomTable th:nth-child(2) {
+  width: 190px;
+}
+
+.bomTable th:nth-child(3),
+.bomTable th:nth-child(4),
+.bomTable th:nth-child(5) {
+  width: 125px;
+}
+
+.bomTable th:nth-child(6) {
+  width: 240px;
+}
+
+.bomTable th:nth-child(7) {
+  width: 70px;
+}
+
+.bomTable th:nth-child(8) {
+  width: 160px;
+}
+
 th,
 td {
   border-bottom: 1px solid var(--line);
-  font-size: 14px;
-  padding: 12px 14px;
+  font-size: 13px;
+  padding: 10px 12px;
   text-align: left;
   vertical-align: top;
 }
@@ -620,7 +1212,7 @@ td {
 th {
   background: var(--surface-muted);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -629,55 +1221,107 @@ tr:last-child td {
   border-bottom: 0;
 }
 
-.warningList,
-.checksList {
-  display: grid;
+.truncateCell {
+  min-width: 0;
+}
+
+.truncateCell > span,
+.truncateCell > code {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tableFooter {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 13px;
   gap: 12px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.compactButton {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.technicalDetailsGrid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .warningList li,
 .checkItem {
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-left: 4px solid var(--info);
+  border-radius: 8px;
 }
 
 .warningList li {
-  background: var(--surface);
-  border-radius: 8px;
   display: grid;
   gap: 6px;
-  padding: 14px 16px;
-}
-
-.warningList strong {
-  font-size: 13px;
+  padding: 12px 14px;
 }
 
 .warningList span {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.warningList code {
   color: var(--muted);
-  line-height: 1.5;
 }
 
 .checkItem {
   align-items: start;
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: minmax(0, 1fr) auto;
+  padding: 13px 14px;
+}
+
+.checkTitleRow {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  justify-content: space-between;
+}
+
+.checkTitleRow h4 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.checkTitleRow code {
+  color: var(--muted);
+}
+
+.checkItem p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 6px 0;
 }
 
 .checkItem small {
   color: var(--muted);
   display: block;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .checkItem > span {
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 850;
-  padding: 7px 10px;
+  padding: 6px 8px;
   white-space: nowrap;
 }
 
@@ -706,6 +1350,47 @@ tr:last-child td {
 .severityError > span:last-child {
   background: #fff1f0;
   color: var(--error);
+}
+
+.exportLayout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.exportCard {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.exportOption {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 14px;
+}
+
+.exportOption button {
+  width: 100%;
+}
+
+.exportOption p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.reportPreviewPanel .subsectionHeading {
+  margin-bottom: 10px;
 }
 
 .emptyState {
@@ -748,9 +1433,13 @@ tr:last-child td {
 @media (max-width: 900px) {
   .homeGrid,
   .formGrid,
-  .blockGrid,
-  .requirementsGrid,
-  .reviewRiskGrid {
+  .reviewRiskGrid,
+  .reviewDecisionGrid,
+  .resourceGrid,
+  .overviewSecondaryGrid,
+  .blockCategoryList,
+  .technicalDetailsGrid,
+  .exportLayout {
     grid-template-columns: 1fr;
   }
 
@@ -759,6 +1448,28 @@ tr:last-child td {
     flex-direction: column;
     gap: 10px;
     padding: 16px 20px;
+  }
+
+  .resultDashboard {
+    padding-top: 28px;
+  }
+
+  .dashboardSection:not(.resultOverview) {
+    margin-top: 0;
+  }
+
+  .summaryMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resourceCardGrid,
+  .gpioSummaryList,
+  .exportCard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .requirementsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .checkItem {
@@ -775,5 +1486,48 @@ tr:last-child td {
 
   .secondaryButton {
     width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .pageShell {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .resultHero,
+  .attentionHeading,
+  .dashboardSectionHeading,
+  .parameterCardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .resultHero h1 {
+    font-size: 30px;
+  }
+
+  .reviewStatusBadge {
+    align-self: flex-start;
+  }
+
+  .attentionList,
+  .parameterCardGrid,
+  .resourceCardGrid,
+  .gpioSummaryList,
+  .exportCard,
+  .quickExportPanel .exportCard,
+  .requirementsGrid,
+  .compactBlockGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardSectionHeading h2 {
+    font-size: 22px;
+  }
+
+  .tableFooter {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

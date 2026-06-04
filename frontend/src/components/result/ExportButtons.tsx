@@ -10,7 +10,7 @@ type ExportButtonsProps = {
 };
 
 /**
- * Управляет действиями экспорта результата: CSV, Markdown и ZIP.
+ * Управляет действиями экспорта результата и поясняет назначение каждого файла.
  * Компонент не знает деталей API и получает готовые handlers от страницы-контейнера.
  */
 export function ExportButtons({
@@ -24,41 +24,50 @@ export function ExportButtons({
   onDownloadZipPackage,
 }: ExportButtonsProps) {
   return (
-    <>
-      <div className="exportActions">
+    <div className="exportCard">
+      <div className="exportOption">
         <button className="secondaryButton" disabled={csvLoading} onClick={onDownloadCsv} type="button">
-          {csvLoading ? "Подготовка CSV..." : "Скачать BoM CSV"}
+          {csvLoading ? "Подготовка файла..." : "Скачать перечень элементов (.csv)"}
         </button>
+        <p>Табличный файл для Excel и других табличных редакторов.</p>
+      </div>
+
+      <div className="exportOption">
         <button
           className="secondaryButton"
           disabled={reportLoading}
           onClick={onGenerateReport}
           type="button"
         >
-          {reportLoading ? "Формирование..." : "Сформировать отчёт"}
+          {reportLoading ? "Формирование..." : "Сформировать инженерный отчёт"}
         </button>
-        {/* Markdown можно скачать только после генерации текста отчёта на backend. */}
+        <p>Подготавливает текстовый инженерный отчёт по текущему результату.</p>
+      </div>
+
+      <div className="exportOption">
+        {/* Отчёт можно скачать только после генерации текста на backend. */}
         <button
           className="primaryButton"
           disabled={reportLoading || !hasMarkdownReport}
           onClick={onDownloadMarkdown}
           type="button"
         >
-          Скачать Markdown
+          Скачать отчёт (.md)
         </button>
+        <p>Текстовый инженерный отчёт в формате Markdown.</p>
+      </div>
+
+      <div className="exportOption">
         <button
           className="secondaryButton"
           disabled={zipLoading}
           onClick={onDownloadZipPackage}
           type="button"
         >
-          {zipLoading ? "Подготовка ZIP..." : "Скачать ZIP-пакет проекта"}
+          {zipLoading ? "Подготовка архива..." : "Скачать архив проекта (.zip)"}
         </button>
+        <p>Архив с требованиями, отчётом, перечнем элементов и черновыми KiCad-файлами.</p>
       </div>
-      <p className="exportHint">
-        ZIP содержит project-spec.json, BoM, Markdown-отчёт и черновые заготовки KiCad-файлов.
-        Это не готовая плата.
-      </p>
-    </>
+    </div>
   );
 }
