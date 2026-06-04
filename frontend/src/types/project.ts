@@ -64,6 +64,67 @@ export type CheckResult = {
   relatedBlockCode?: string | null;
 };
 
+export type MissingEngineeringParameter = {
+  code: string;
+  title: string;
+  whyItMatters: string;
+  status: string;
+  recommendation: string;
+};
+
+export type BlockRationaleItem = {
+  blockCode: string;
+  blockName: string;
+  reason: string;
+  relatedRequirement: string;
+};
+
+export type EngineeringRiskItem = {
+  code: string;
+  title: string;
+  priority: "Critical" | "RequiresDecision" | "Recommendation" | string;
+  message: string;
+  recommendation: string;
+  relatedBlockCode?: string | null;
+};
+
+export type PowerBudgetItem = {
+  rail: string;
+  loads: string[];
+  status: string;
+  recommendation: string;
+};
+
+export type GpioBudgetItem = {
+  function: string;
+  requiredResources: string[];
+  estimatedPins: string;
+  notes: string;
+};
+
+export type EngineeringDecisionItem = {
+  code: string;
+  title: string;
+  whyItMatters: string;
+  recommendation: string;
+};
+
+export type EngineeringNextStep = {
+  order: number;
+  title: string;
+  description: string;
+};
+
+export type EngineeringReview = {
+  missingParameters: MissingEngineeringParameter[];
+  blockRationale: BlockRationaleItem[];
+  riskSummary: EngineeringRiskItem[];
+  powerBudget: PowerBudgetItem[];
+  gpioBudget: GpioBudgetItem[];
+  engineeringDecisions: EngineeringDecisionItem[];
+  nextSteps: EngineeringNextStep[];
+};
+
 export type ValidationIssue = {
   code: string;
   severity: "Info" | "Warning" | "Error" | string;
@@ -83,4 +144,5 @@ export type ArchitectureResult = {
   bom: BomItem[];
   warnings: EngineeringWarning[];
   checkResults: CheckResult[];
+  engineeringReview: EngineeringReview;
 };

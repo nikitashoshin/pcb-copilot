@@ -327,6 +327,7 @@ input {
 .resultStack {
   display: grid;
   gap: 32px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .sectionTitle {
@@ -387,6 +388,171 @@ input {
 .requirementsGrid dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.engineeringReviewSection {
+  display: grid;
+  gap: 26px;
+}
+
+.reviewNotice {
+  background: #eef6ff;
+  border: 1px solid #c9def2;
+  border-left: 4px solid var(--info);
+  border-radius: 8px;
+  color: #174f7d;
+  line-height: 1.55;
+  margin: 0;
+  padding: 14px 16px;
+}
+
+.reviewSubsection {
+  min-width: 0;
+}
+
+.reviewSubsection h3 {
+  font-size: 19px;
+  margin: 0 0 12px;
+}
+
+.inlineCode {
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.reviewRationaleList,
+.reviewDecisionList,
+.reviewNextSteps {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reviewRationaleList li,
+.reviewDecisionList li {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.reviewRationaleList li > div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reviewRationaleList code,
+.reviewRiskItem code {
+  background: var(--surface-muted);
+  border-radius: 6px;
+  color: var(--primary-dark);
+  font-size: 12px;
+  padding: 4px 7px;
+}
+
+.reviewRationaleList p,
+.reviewDecisionList p,
+.reviewRiskItem p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.reviewRationaleList small,
+.reviewDecisionList small,
+.reviewRiskItem small {
+  color: var(--muted);
+  display: block;
+  line-height: 1.45;
+}
+
+.reviewRiskGrid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reviewRiskGroup {
+  min-width: 0;
+}
+
+.reviewRiskGroup h4 {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+
+.reviewRiskList {
+  display: grid;
+  gap: 10px;
+}
+
+.reviewRiskItem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--info);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.reviewRiskItem code {
+  display: inline-block;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+
+.reviewRiskCritical {
+  border-left-color: var(--error);
+}
+
+.reviewRiskDecision {
+  border-left-color: var(--warning);
+}
+
+.reviewRiskRecommendation {
+  border-left-color: var(--info);
+}
+
+.reviewNextSteps {
+  counter-reset: review-step;
+}
+
+.reviewNextSteps li {
+  align-items: start;
+  counter-increment: review-step;
+  display: grid;
+  gap: 4px 12px;
+  grid-template-columns: 30px minmax(0, 1fr);
+}
+
+.reviewNextSteps li::before {
+  align-items: center;
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--primary-dark);
+  content: counter(review-step);
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.reviewNextSteps strong,
+.reviewNextSteps span {
+  grid-column: 2;
+}
+
+.reviewNextSteps span {
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .blockCard,
@@ -583,7 +749,8 @@ tr:last-child td {
   .homeGrid,
   .formGrid,
   .blockGrid,
-  .requirementsGrid {
+  .requirementsGrid,
+  .reviewRiskGrid {
     grid-template-columns: 1fr;
   }
 

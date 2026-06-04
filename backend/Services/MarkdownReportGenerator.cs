@@ -30,6 +30,7 @@ public sealed class MarkdownReportGenerator
         AppendBom(builder, architecture);
         AppendWarnings(builder, architecture);
         AppendCheckResults(builder, architecture);
+        AppendEngineeringReview(builder, architecture.EngineeringReview);
         AppendConclusion(builder, architecture);
 
         return builder.ToString();
@@ -141,6 +142,144 @@ public sealed class MarkdownReportGenerator
         builder.AppendLine();
     }
 
+    private static void AppendEngineeringReview(StringBuilder builder, EngineeringReview review)
+    {
+        builder.AppendLine("## Инженерный анализ");
+        builder.AppendLine();
+        builder.AppendLine(
+            "Этот раздел является предварительным инженерным анализом. Он помогает выявить недостающие параметры, риски и решения, но не заменяет ручную проверку и финальное инженерное заключение.");
+        builder.AppendLine();
+
+        AppendMissingParameters(builder, review.MissingParameters);
+        AppendBlockRationale(builder, review.BlockRationale);
+        AppendRiskSummary(builder, review.RiskSummary);
+        AppendPowerBudget(builder, review.PowerBudget);
+        AppendGpioBudget(builder, review.GpioBudget);
+        AppendEngineeringDecisions(builder, review.EngineeringDecisions);
+        AppendNextSteps(builder, review.NextSteps);
+    }
+
+    private static void AppendMissingParameters(
+        StringBuilder builder,
+        IReadOnlyCollection<MissingEngineeringParameter> items)
+    {
+        builder.AppendLine("### Недостающие инженерные параметры");
+        builder.AppendLine();
+        builder.AppendLine("| Параметр | Почему важно | Статус | Рекомендация |");
+        builder.AppendLine("| --- | --- | --- | --- |");
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"| {Cell(item.Title)} | {Cell(item.WhyItMatters)} | {Cell(item.Status)} | {Cell(item.Recommendation)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendBlockRationale(
+        StringBuilder builder,
+        IReadOnlyCollection<BlockRationaleItem> items)
+    {
+        builder.AppendLine("### Обоснование выбора блоков");
+        builder.AppendLine();
+        builder.AppendLine("| Блок | Почему добавлен | Связанное требование |");
+        builder.AppendLine("| --- | --- | --- |");
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"| `{Cell(item.BlockCode)}` {Cell(item.BlockName)} | {Cell(item.Reason)} | {Cell(item.RelatedRequirement)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendRiskSummary(
+        StringBuilder builder,
+        IReadOnlyCollection<EngineeringRiskItem> items)
+    {
+        builder.AppendLine("### Приоритизация рисков");
+        builder.AppendLine();
+        builder.AppendLine("| Приоритет | Риск | Описание | Рекомендация | Блок |");
+        builder.AppendLine("| --- | --- | --- | --- | --- |");
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"| {PriorityCell(item.Priority)} | {Cell(item.Title)} | {Cell(item.Message)} | {Cell(item.Recommendation)} | {Cell(item.RelatedBlockCode)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendPowerBudget(
+        StringBuilder builder,
+        IReadOnlyCollection<PowerBudgetItem> items)
+    {
+        builder.AppendLine("### Предварительный бюджет питания");
+        builder.AppendLine();
+        builder.AppendLine("| Линия питания | Потенциальные нагрузки | Статус | Рекомендация |");
+        builder.AppendLine("| --- | --- | --- | --- |");
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"| {Cell(item.Rail)} | {Cell(string.Join(", ", item.Loads))} | {Cell(item.Status)} | {Cell(item.Recommendation)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendGpioBudget(
+        StringBuilder builder,
+        IReadOnlyCollection<GpioBudgetItem> items)
+    {
+        builder.AppendLine("### GPIO / peripheral budget");
+        builder.AppendLine();
+        builder.AppendLine("| Функция | Требуемые ресурсы | Оценка выводов | Примечание |");
+        builder.AppendLine("| --- | --- | --- | --- |");
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"| {Cell(item.Function)} | {Cell(string.Join(", ", item.RequiredResources))} | {Cell(item.EstimatedPins)} | {Cell(item.Notes)} |");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendEngineeringDecisions(
+        StringBuilder builder,
+        IReadOnlyCollection<EngineeringDecisionItem> items)
+    {
+        builder.AppendLine("### Решения инженера");
+        builder.AppendLine();
+
+        foreach (var item in items)
+        {
+            builder.AppendLine(
+                $"- **{Cell(item.Title)}** (`{Cell(item.Code)}`): {Cell(item.WhyItMatters)} Рекомендация: {Cell(item.Recommendation)}");
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendNextSteps(
+        StringBuilder builder,
+        IReadOnlyCollection<EngineeringNextStep> items)
+    {
+        builder.AppendLine("### Следующие инженерные шаги");
+        builder.AppendLine();
+
+        foreach (var item in items.OrderBy(item => item.Order))
+        {
+            builder.AppendLine($"{item.Order}. **{Cell(item.Title)}** — {Cell(item.Description)}");
+        }
+
+        builder.AppendLine();
+    }
+
     private static void AppendConclusion(StringBuilder builder, ArchitectureResult architecture)
     {
         var reviewRequired = architecture.Warnings.Count > 0 ||
@@ -181,6 +320,17 @@ public sealed class MarkdownReportGenerator
             "Failed" => "Не пройдено",
             "NotApplicable" => "Не применимо",
             _ => Cell(status)
+        };
+    }
+
+    private static string PriorityCell(string? priority)
+    {
+        return priority switch
+        {
+            "Critical" => "Критично",
+            "RequiresDecision" => "Требует решения",
+            "Recommendation" => "Рекомендация",
+            _ => Cell(priority)
         };
     }
 

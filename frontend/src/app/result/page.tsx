@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BomTable } from "@/components/result/BomTable";
 import { CheckResultsList } from "@/components/result/CheckResultsList";
+import { EngineeringReviewSection } from "@/components/result/EngineeringReviewSection";
 import { ExportButtons } from "@/components/result/ExportButtons";
 import { FunctionalBlocksList } from "@/components/result/FunctionalBlocksList";
 import { MarkdownReportPreview } from "@/components/result/MarkdownReportPreview";
@@ -147,6 +148,7 @@ export default function ResultPage() {
       </div>
 
       <ProjectSpecSummary spec={result.projectSpec} />
+      <EngineeringReviewSection review={result.engineeringReview} />
       <FunctionalBlocksList blocks={result.functionalBlocks} />
       <BomTable bom={result.bom} />
       <WarningsList warnings={result.warnings} />

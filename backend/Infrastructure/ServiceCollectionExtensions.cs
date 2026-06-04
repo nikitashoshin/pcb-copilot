@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPcbCopilotServices(this IServiceCollection services)
     {
         services.AddSingleton<FunctionalBlockCatalog>();
+        services.AddSingleton<EngineeringReviewGenerator>();
         services.AddSingleton<ArchitectureGenerator>();
         services.AddSingleton<ProjectValidator>();
         services.AddSingleton<BomCsvExporter>();

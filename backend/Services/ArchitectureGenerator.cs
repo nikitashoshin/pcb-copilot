@@ -10,10 +10,14 @@ namespace PcbCopilot.Backend.Services;
 public sealed class ArchitectureGenerator
 {
     private readonly FunctionalBlockCatalog _catalog;
+    private readonly EngineeringReviewGenerator _engineeringReviewGenerator;
 
-    public ArchitectureGenerator(FunctionalBlockCatalog catalog)
+    public ArchitectureGenerator(
+        FunctionalBlockCatalog catalog,
+        EngineeringReviewGenerator engineeringReviewGenerator)
     {
         _catalog = catalog;
+        _engineeringReviewGenerator = engineeringReviewGenerator;
     }
 
     /// <summary>
@@ -29,7 +33,7 @@ public sealed class ArchitectureGenerator
 
         AddScenarioWarnings(spec, warnings);
 
-        return new ArchitectureResult
+        var architecture = new ArchitectureResult
         {
             ProjectName = string.IsNullOrWhiteSpace(spec.ProjectName) ? "Untitled PCB Copilot Project" : spec.ProjectName,
             ProjectSpec = spec,
@@ -37,6 +41,11 @@ public sealed class ArchitectureGenerator
             Bom = bom,
             Warnings = DedupeWarnings(warnings),
             CheckResults = BuildCheckResults(spec, bom)
+        };
+
+        return architecture with
+        {
+            EngineeringReview = _engineeringReviewGenerator.Generate(spec, architecture)
         };
     }
 

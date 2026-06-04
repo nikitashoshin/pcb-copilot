@@ -8,4 +8,5 @@ public sealed record ArchitectureResult
     public List<BomItem> Bom { get; init; } = new();
     public List<EngineeringWarning> Warnings { get; init; } = new();
     public List<CheckResult> CheckResults { get; init; } = new();
+    public EngineeringReview EngineeringReview { get; init; } = new();
 }
