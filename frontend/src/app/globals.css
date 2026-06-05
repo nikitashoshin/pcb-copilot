@@ -280,6 +280,331 @@ input {
   outline: 3px solid rgba(33, 107, 98, 0.14);
 }
 
+.newProjectShell {
+  max-width: 1280px;
+  padding-top: 32px;
+}
+
+.projectConfigurator {
+  display: grid;
+  gap: 16px;
+}
+
+.configuratorHeader {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding-bottom: 14px;
+}
+
+.configuratorHeader h1 {
+  font-size: 30px;
+  line-height: 1.12;
+  margin: 4px 0 0;
+}
+
+.configuratorHeader > span {
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--primary-dark);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 850;
+  padding: 6px 10px;
+}
+
+.configuratorLayout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.configuratorMain {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 0 16px;
+}
+
+.configPanel {
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+  padding: 14px 0;
+}
+
+.configPanel h2 {
+  font-size: 15px;
+  line-height: 1.25;
+  margin: 0 0 10px;
+}
+
+.configFieldGrid {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.configFieldGrid.threeColumns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.configField {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.configField span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.configField input {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  min-height: 36px;
+  min-width: 0;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.configField input:focus {
+  border-color: var(--primary);
+  outline: 3px solid rgba(33, 107, 98, 0.14);
+}
+
+.fixedParameterRows {
+  align-self: stretch;
+  background: #fbfcfd;
+  border: 1px solid #e4e9ef;
+  border-radius: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.configPanel > .fixedParameterRows {
+  margin-top: 10px;
+}
+
+.fixedParameterRow {
+  align-items: center;
+  border-bottom: 1px solid #e4e9ef;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(112px, 0.9fr) minmax(0, 1fr) auto;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+.fixedParameterRow:last-child {
+  border-bottom: 0;
+}
+
+.fixedParameterRow span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+  min-width: 0;
+}
+
+.fixedParameterRow strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fixedParameterRow em {
+  background: transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 750;
+  padding: 0;
+}
+
+.laterClarifications {
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+  padding: 12px 0;
+}
+
+.laterClarifications summary,
+.summaryClarifications summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  list-style: none;
+}
+
+.laterClarifications summary::-webkit-details-marker,
+.summaryClarifications summary::-webkit-details-marker {
+  display: none;
+}
+
+.laterClarifications summary span,
+.summaryClarifications summary span {
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.laterClarifications summary b,
+.summaryClarifications summary b {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  min-width: 26px;
+  padding: 4px 7px;
+  text-align: center;
+}
+
+.laterClarifications ul,
+.summaryClarifications ul {
+  color: var(--muted);
+  display: grid;
+  font-size: 12px;
+  gap: 5px 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  line-height: 1.4;
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.projectSummaryPanel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  max-height: calc(100vh - 104px);
+  min-width: 0;
+  overflow: auto;
+  padding: 14px;
+  position: sticky;
+  top: 88px;
+}
+
+.summaryHeader {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.summaryHeader p {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 850;
+  margin: 0;
+}
+
+.summaryHeader h2 {
+  font-size: 18px;
+  line-height: 1.25;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.summarySubmitButton {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.summarySpecGrid {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  overflow: hidden;
+}
+
+.summarySpecGrid div {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  min-width: 0;
+  padding: 9px 10px;
+}
+
+.summarySpecGrid div:nth-child(2n) {
+  border-right: 0;
+}
+
+.summarySpecGrid div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.summarySpecGrid dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  margin-bottom: 3px;
+}
+
+.summarySpecGrid dd {
+  font-size: 13px;
+  font-weight: 750;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.summaryBlock {
+  display: grid;
+  gap: 8px;
+}
+
+.summaryBlock h3 {
+  font-size: 13px;
+  margin: 0;
+}
+
+.projectSummaryPanel .fixedParameterRow {
+  grid-template-columns: minmax(112px, 0.8fr) minmax(0, 1fr);
+  min-height: 30px;
+  padding: 5px 8px;
+}
+
+.projectSummaryPanel .fixedParameterRow strong {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.projectSummaryPanel .fixedParameterRow em {
+  display: none;
+}
+
+.summaryClarifications {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.summaryClarifications ul {
+  grid-template-columns: 1fr;
+}
+
+.compactValidationPanel {
+  border-top: 0;
+  margin: 0;
+  padding: 14px 0 16px;
+}
+
 .formActions {
   display: flex;
   justify-content: flex-end;
@@ -1433,6 +1758,7 @@ tr:last-child td {
 @media (max-width: 900px) {
   .homeGrid,
   .formGrid,
+  .configuratorLayout,
   .reviewRiskGrid,
   .reviewDecisionGrid,
   .resourceGrid,
@@ -1480,6 +1806,16 @@ tr:last-child td {
     justify-content: stretch;
   }
 
+  .projectSummaryPanel {
+    max-height: none;
+    order: -1;
+    position: static;
+  }
+
+  .summarySubmitButton {
+    position: static;
+  }
+
   .primaryButton {
     width: 100%;
   }
@@ -1496,11 +1832,16 @@ tr:last-child td {
   }
 
   .resultHero,
+  .configuratorHeader,
   .attentionHeading,
   .dashboardSectionHeading,
   .parameterCardHeader {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .newProjectShell {
+    padding-top: 24px;
   }
 
   .resultHero h1 {
@@ -1512,6 +1853,9 @@ tr:last-child td {
   }
 
   .attentionList,
+  .configFieldGrid,
+  .configFieldGrid.threeColumns,
+  .laterClarifications ul,
   .parameterCardGrid,
   .resourceCardGrid,
   .gpioSummaryList,
@@ -1520,6 +1864,19 @@ tr:last-child td {
   .requirementsGrid,
   .compactBlockGrid {
     grid-template-columns: 1fr;
+  }
+
+  .summarySpecGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fixedParameterRow,
+  .projectSummaryPanel .fixedParameterRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .fixedParameterRow span {
+    grid-column: 1 / -1;
   }
 
   .dashboardSectionHeading h2 {

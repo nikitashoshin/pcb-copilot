@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { generateArchitecture, validateProjectSpec } from "@/lib/api";
 import { saveArchitectureResult } from "@/lib/result-storage";
@@ -18,8 +19,26 @@ type ProjectFormState = {
   layers: number;
 };
 
+type FixedParameter = {
+  label: string;
+  value: string;
+};
+
+type ConfigSectionProps = {
+  title: string;
+  children: ReactNode;
+};
+
+type TextFieldProps = {
+  label: string;
+  value: string | number;
+  type?: "text" | "number";
+  min?: number;
+  onChange: (value: string) => void;
+};
+
 const initialFormState: ProjectFormState = {
-  projectName: "Industrial STM32 Controller",
+  projectName: "Промышленный контроллер STM32",
   inputVoltage: "24V DC",
   mcuFamily: "STM32",
   interfaces: "RS-485",
@@ -29,6 +48,79 @@ const initialFormState: ProjectFormState = {
   boardHeightMm: 60,
   layers: 2,
 };
+
+const notClarifiedItems = [
+  "ток катушки выбранного реле",
+  "напряжение, ток и характер нагрузки релейных контактов",
+  "нужна ли гальваническая развязка RS-485",
+  "тип дискретных входов: сухой контакт, активный 24 В, PNP/NPN",
+  "токи потребления линий 5 В и 3,3 В",
+  "температурный диапазон",
+  "требования к корпусу, креплению и механике",
+  "требования EMC, ESD и EFT",
+];
+
+const baseFixedParameters: FixedParameter[] = [
+  { label: "Тип устройства", value: "Промышленный контроллер" },
+  { label: "Линии питания", value: "5 В, 3,3 В" },
+  { label: "Защита питания", value: "Включена" },
+  { label: "Программирование", value: "SWD" },
+  { label: "Уровень входов", value: "24 В" },
+  { label: "Среда", value: "Промышленная" },
+];
+
+function ConfigSection({ title, children }: ConfigSectionProps) {
+  return (
+    <section className="configPanel">
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function TextField({ label, value, type = "text", min, onChange }: TextFieldProps) {
+  return (
+    <label className="configField">
+      <span>{label}</span>
+      <input
+        min={min}
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </label>
+  );
+}
+
+function FixedParameterRows({ items }: { items: FixedParameter[] }) {
+  return (
+    <div className="fixedParameterRows">
+      {items.map((item) => (
+        <div className="fixedParameterRow" key={item.label}>
+          <span>{item.label}</span>
+          <strong>{item.value}</strong>
+          <em>фиксировано</em>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function inputCountLabel(count: number) {
+  const absCount = Math.abs(count);
+  const lastDigit = absCount % 10;
+  const lastTwoDigits = absCount % 100;
+
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return "вход";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 12 || lastTwoDigits > 14)) {
+    return "входа";
+  }
+
+  return "входов";
+}
 
 /**
  * Страница первого MVP-сценария: собирает исходные требования,
@@ -125,125 +217,196 @@ export default function NewProjectPage() {
     }
   }
 
+  const boardSize = `${form.boardWidthMm} x ${form.boardHeightMm} мм`;
+  const ioSummary = `${form.digitalInputsCount} ${inputCountLabel(
+    form.digitalInputsCount,
+  )} / ${form.relayOutputsCount} реле`;
+  const submitLabel = isLoading ? "Проверка и формирование..." : "Сформировать архитектуру";
+
   return (
-    <section className="pageShell">
-      <div className="sectionHeader">
-        <p className="eyebrow">Исходные требования</p>
-        <h1>Создание проекта</h1>
-        <p>
-          Форма заполнена первым демонстрационным сценарием MVP: промышленный контроллер
-          на STM32 с питанием 24V DC, RS-485, 4 входами 24V и 2 релейными выходами.
-        </p>
-      </div>
-
-      <form className="formPanel" onSubmit={handleSubmit}>
-        <div className="formGrid">
-          <label>
-            <span>Название проекта</span>
-            <input
-              value={form.projectName}
-              onChange={(event) => updateField("projectName", event.target.value)}
-            />
-          </label>
-
-          <label>
-            <span>Входное питание</span>
-            <input
-              value={form.inputVoltage}
-              onChange={(event) => updateField("inputVoltage", event.target.value)}
-            />
-          </label>
-
-          <label>
-            <span>Семейство MCU</span>
-            <input
-              value={form.mcuFamily}
-              onChange={(event) => updateField("mcuFamily", event.target.value)}
-            />
-          </label>
-
-          <label>
-            <span>Интерфейсы</span>
-            <input
-              value={form.interfaces}
-              onChange={(event) => updateField("interfaces", event.target.value)}
-            />
-          </label>
-
-          <label>
-            <span>Количество дискретных входов</span>
-            <input
-              min={0}
-              type="number"
-              value={form.digitalInputsCount}
-              onChange={(event) => updateField("digitalInputsCount", Number(event.target.value))}
-            />
-          </label>
-
-          <label>
-            <span>Количество релейных выходов</span>
-            <input
-              min={0}
-              type="number"
-              value={form.relayOutputsCount}
-              onChange={(event) => updateField("relayOutputsCount", Number(event.target.value))}
-            />
-          </label>
-
-          <label>
-            <span>Ширина платы, мм</span>
-            <input
-              min={1}
-              type="number"
-              value={form.boardWidthMm}
-              onChange={(event) => updateField("boardWidthMm", Number(event.target.value))}
-            />
-          </label>
-
-          <label>
-            <span>Высота платы, мм</span>
-            <input
-              min={1}
-              type="number"
-              value={form.boardHeightMm}
-              onChange={(event) => updateField("boardHeightMm", Number(event.target.value))}
-            />
-          </label>
-
-          <label>
-            <span>Количество слоёв</span>
-            <input
-              min={1}
-              type="number"
-              value={form.layers}
-              onChange={(event) => updateField("layers", Number(event.target.value))}
-            />
-          </label>
-        </div>
-
-        {error && <div className="errorBox">{error}</div>}
-
-        {validationIssues.length > 0 && (
-          <div className="validationPanel">
-            <h2>Результат проверки требований</h2>
-            <ul className="validationList">
-              {validationIssues.map((issue) => (
-                <li className={`validationItem severity${issue.severity}`} key={issue.code}>
-                  <strong>
-                    {severityLabel(issue.severity)}: {issue.code}
-                  </strong>
-                  <span>{issue.message}</span>
-                  <small>{issue.recommendation}</small>
-                </li>
-              ))}
-            </ul>
+    <section className="pageShell newProjectShell">
+      <form className="projectConfigurator" id="new-project-form" onSubmit={handleSubmit}>
+        <header className="configuratorHeader">
+          <div>
+            <p className="eyebrow">Первый сценарий MVP</p>
+            <h1>Создание проекта</h1>
           </div>
-        )}
+          <span>Промышленный контроллер</span>
+        </header>
 
-        <div className="formActions">
-          <button className="primaryButton" disabled={isLoading} type="submit">
-            {isLoading ? "Проверка и формирование..." : "Сформировать архитектуру"}
-          </button>
+        <div className="configuratorLayout">
+          <div className="configuratorMain">
+            <ConfigSection title="Основное">
+              <div className="configFieldGrid">
+                <TextField
+                  label="Название проекта"
+                  value={form.projectName}
+                  onChange={(value) => updateField("projectName", value)}
+                />
+                <FixedParameterRows items={[baseFixedParameters[0]]} />
+              </div>
+            </ConfigSection>
+
+            <ConfigSection title="Питание">
+              <div className="configFieldGrid">
+                <TextField
+                  label="Входное питание"
+                  value={form.inputVoltage}
+                  onChange={(value) => updateField("inputVoltage", value)}
+                />
+                <FixedParameterRows items={baseFixedParameters.slice(1, 3)} />
+              </div>
+            </ConfigSection>
+
+            <ConfigSection title="Микроконтроллер и связь">
+              <div className="configFieldGrid">
+                <TextField
+                  label="Семейство микроконтроллера"
+                  value={form.mcuFamily}
+                  onChange={(value) => updateField("mcuFamily", value)}
+                />
+                <TextField
+                  label="Интерфейсы"
+                  value={form.interfaces}
+                  onChange={(value) => updateField("interfaces", value)}
+                />
+              </div>
+              <FixedParameterRows items={[baseFixedParameters[3]]} />
+            </ConfigSection>
+
+            <ConfigSection title="Вводы и выходы">
+              <div className="configFieldGrid">
+                <TextField
+                  label="Дискретные входы"
+                  min={0}
+                  type="number"
+                  value={form.digitalInputsCount}
+                  onChange={(value) => updateField("digitalInputsCount", Number(value))}
+                />
+                <TextField
+                  label="Релейные выходы"
+                  min={0}
+                  type="number"
+                  value={form.relayOutputsCount}
+                  onChange={(value) => updateField("relayOutputsCount", Number(value))}
+                />
+              </div>
+              <FixedParameterRows items={[baseFixedParameters[4]]} />
+            </ConfigSection>
+
+            <ConfigSection title="Плата">
+              <div className="configFieldGrid threeColumns">
+                <TextField
+                  label="Ширина, мм"
+                  min={1}
+                  type="number"
+                  value={form.boardWidthMm}
+                  onChange={(value) => updateField("boardWidthMm", Number(value))}
+                />
+                <TextField
+                  label="Высота, мм"
+                  min={1}
+                  type="number"
+                  value={form.boardHeightMm}
+                  onChange={(value) => updateField("boardHeightMm", Number(value))}
+                />
+                <TextField
+                  label="Слои"
+                  min={1}
+                  type="number"
+                  value={form.layers}
+                  onChange={(value) => updateField("layers", Number(value))}
+                />
+              </div>
+              <FixedParameterRows items={[baseFixedParameters[5]]} />
+            </ConfigSection>
+
+            <details className="laterClarifications">
+              <summary>
+                <span>Что уточняется позже</span>
+                <b>{notClarifiedItems.length}</b>
+              </summary>
+              <ul>
+                {notClarifiedItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </details>
+
+            {error && <div className="errorBox">{error}</div>}
+
+            {validationIssues.length > 0 && (
+              <div className="validationPanel compactValidationPanel">
+                <h2>Результат проверки требований</h2>
+                <ul className="validationList">
+                  {validationIssues.map((issue) => (
+                    <li className={`validationItem severity${issue.severity}`} key={issue.code}>
+                      <strong>
+                        {severityLabel(issue.severity)}: {issue.code}
+                      </strong>
+                      <span>{issue.message}</span>
+                      <small>{issue.recommendation}</small>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <aside className="projectSummaryPanel" aria-label="Сводка проекта">
+            <div className="summaryHeader">
+              <p>Сводка проекта</p>
+              <h2>{form.projectName || "Без названия"}</h2>
+            </div>
+
+            <button className="primaryButton summarySubmitButton" disabled={isLoading} type="submit">
+              {submitLabel}
+            </button>
+
+            <dl className="summarySpecGrid">
+              <div>
+                <dt>Питание</dt>
+                <dd>{form.inputVoltage || "-"}</dd>
+              </div>
+              <div>
+                <dt>Микроконтроллер</dt>
+                <dd>{form.mcuFamily || "-"}</dd>
+              </div>
+              <div>
+                <dt>Интерфейс</dt>
+                <dd>{form.interfaces || "-"}</dd>
+              </div>
+              <div>
+                <dt>Ввод/вывод</dt>
+                <dd>{ioSummary}</dd>
+              </div>
+              <div>
+                <dt>Плата</dt>
+                <dd>{boardSize}</dd>
+              </div>
+              <div>
+                <dt>Слои</dt>
+                <dd>{form.layers}</dd>
+              </div>
+            </dl>
+
+            <div className="summaryBlock">
+              <h3>Фиксировано в MVP</h3>
+              <FixedParameterRows items={baseFixedParameters} />
+            </div>
+
+            <details className="summaryClarifications">
+              <summary>
+                <span>Уточняется позже</span>
+                <b>{notClarifiedItems.length}</b>
+              </summary>
+              <ul>
+                {notClarifiedItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </details>
+          </aside>
         </div>
       </form>
     </section>
