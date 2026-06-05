@@ -4,6 +4,8 @@ import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { generateArchitecture, validateProjectSpec } from "@/lib/api";
+import type { ParseRequirementsResult, ParsedRequirementKey } from "@/lib/requirements-parser";
+import { parseRequirementsText } from "@/lib/requirements-parser";
 import { saveArchitectureResult } from "@/lib/result-storage";
 import type { ProjectSpec, ValidationIssue } from "@/types/project";
 
@@ -24,6 +26,8 @@ type FixedParameter = {
   value: string;
 };
 
+type FillMode = "form" | "text";
+
 type ConfigSectionProps = {
   title: string;
   children: ReactNode;
@@ -35,6 +39,15 @@ type TextFieldProps = {
   type?: "text" | "number";
   min?: number;
   onChange: (value: string) => void;
+};
+
+type ParseSummaryItem = {
+  key: ParsedRequirementKey;
+  label: string;
+  defaultLabel?: string;
+  value?: string;
+  showAsFound?: boolean;
+  showAsDefault?: boolean;
 };
 
 const initialFormState: ProjectFormState = {
@@ -68,6 +81,9 @@ const baseFixedParameters: FixedParameter[] = [
   { label: "Уровень входов", value: "24 В" },
   { label: "Среда", value: "Промышленная" },
 ];
+
+const requirementsPlaceholder =
+  "Нужна плата промышленного контроллера на STM32. Питание 24 В, интерфейс RS-485, четыре входа 24 В, два релейных выхода, размер платы 80 на 60 мм, 2 слоя.";
 
 function ConfigSection({ title, children }: ConfigSectionProps) {
   return (
@@ -122,6 +138,18 @@ function inputCountLabel(count: number) {
   return "входов";
 }
 
+function relayCountLabel(count: number) {
+  const absCount = Math.abs(count);
+  const lastDigit = absCount % 10;
+  const lastTwoDigits = absCount % 100;
+
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return "реле";
+  }
+
+  return "реле";
+}
+
 /**
  * Страница первого MVP-сценария: собирает исходные требования,
  * запускает backend-валидацию и сохраняет результат генерации для /result.
@@ -129,6 +157,9 @@ function inputCountLabel(count: number) {
 export default function NewProjectPage() {
   const router = useRouter();
   const [form, setForm] = useState<ProjectFormState>(initialFormState);
+  const [fillMode, setFillMode] = useState<FillMode>("form");
+  const [requirementsText, setRequirementsText] = useState("");
+  const [parseResult, setParseResult] = useState<ParseRequirementsResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
@@ -140,6 +171,30 @@ export default function NewProjectPage() {
     setForm((current) => ({
       ...current,
       [key]: value,
+    }));
+  }
+
+  function handleParseDescription() {
+    const result = parseRequirementsText(requirementsText);
+    setParseResult(result);
+    setForm((current) => ({
+      ...current,
+      ...(result.fields.inputVoltage ? { inputVoltage: result.fields.inputVoltage } : {}),
+      ...(result.fields.mcuFamily ? { mcuFamily: result.fields.mcuFamily } : {}),
+      ...(result.fields.interfaces ? { interfaces: result.fields.interfaces } : {}),
+      ...(result.fields.digitalInputsCount !== undefined
+        ? { digitalInputsCount: result.fields.digitalInputsCount }
+        : {}),
+      ...(result.fields.relayOutputsCount !== undefined
+        ? { relayOutputsCount: result.fields.relayOutputsCount }
+        : {}),
+      ...(result.fields.boardWidthMm !== undefined
+        ? { boardWidthMm: result.fields.boardWidthMm }
+        : {}),
+      ...(result.fields.boardHeightMm !== undefined
+        ? { boardHeightMm: result.fields.boardHeightMm }
+        : {}),
+      ...(result.fields.layers !== undefined ? { layers: result.fields.layers } : {}),
     }));
   }
 
@@ -220,8 +275,101 @@ export default function NewProjectPage() {
   const boardSize = `${form.boardWidthMm} x ${form.boardHeightMm} мм`;
   const ioSummary = `${form.digitalInputsCount} ${inputCountLabel(
     form.digitalInputsCount,
-  )} / ${form.relayOutputsCount} реле`;
+  )} / ${form.relayOutputsCount} ${relayCountLabel(form.relayOutputsCount)}`;
   const submitLabel = isLoading ? "Проверка и формирование..." : "Сформировать архитектуру";
+  const parsedFields = parseResult?.fields;
+  const foundKeys = parseResult?.foundKeys ?? [];
+  const foundKeysSet = new Set<ParsedRequirementKey>(foundKeys);
+  const hasExplicitEnvironmentMention =
+    /сред[ауы]|услови|применен|эксплуатац|industrial\s+(?:environment|usage)/i.test(
+      requirementsText,
+    );
+  const parseSummaryItems: ParseSummaryItem[] = [
+    {
+      key: "deviceType" as ParsedRequirementKey,
+      label: "Тип устройства",
+      value: parsedFields?.deviceType?.toLowerCase(),
+      showAsDefault: false,
+    },
+    {
+      key: "inputVoltage" as ParsedRequirementKey,
+      label: "Входное питание",
+      defaultLabel: "входное питание",
+      value: parsedFields?.inputVoltage ? "24 В" : undefined,
+    },
+    {
+      key: "powerRails" as ParsedRequirementKey,
+      label: "Внутренние линии",
+      defaultLabel: "внутренние линии питания",
+      value: parsedFields?.powerRails,
+    },
+    {
+      key: "mcuFamily" as ParsedRequirementKey,
+      label: "Микроконтроллер",
+      value: parsedFields?.mcuFamily,
+      showAsDefault: false,
+    },
+    {
+      key: "interfaces" as ParsedRequirementKey,
+      label: "Интерфейс",
+      defaultLabel: "интерфейс",
+      value: parsedFields?.interfaces,
+    },
+    {
+      key: "digitalInputsCount" as ParsedRequirementKey,
+      label: "Дискретные входы",
+      defaultLabel: "дискретные входы",
+      value:
+        parsedFields?.digitalInputsCount !== undefined
+          ? String(parsedFields.digitalInputsCount)
+          : undefined,
+    },
+    {
+      key: "relayOutputsCount" as ParsedRequirementKey,
+      label: "Релейные выходы",
+      defaultLabel: "релейные выходы",
+      value:
+        parsedFields?.relayOutputsCount !== undefined
+          ? String(parsedFields.relayOutputsCount)
+          : undefined,
+    },
+    {
+      key: "inputLevel" as ParsedRequirementKey,
+      label: "Уровень входов",
+      value: parsedFields?.inputLevel,
+      showAsDefault: false,
+    },
+    {
+      key: "boardWidthMm" as ParsedRequirementKey,
+      label: "Размер платы",
+      defaultLabel: "размер платы",
+      value:
+        parsedFields?.boardWidthMm !== undefined && parsedFields.boardHeightMm !== undefined
+          ? `${parsedFields.boardWidthMm} x ${parsedFields.boardHeightMm} мм`
+          : undefined,
+    },
+    {
+      key: "layers" as ParsedRequirementKey,
+      label: "Количество слоёв",
+      defaultLabel: "количество слоёв",
+      value: parsedFields?.layers !== undefined ? String(parsedFields.layers) : undefined,
+    },
+    {
+      key: "environment" as ParsedRequirementKey,
+      label: "Среда",
+      defaultLabel: "среда применения",
+      value: parsedFields?.environment?.toLowerCase(),
+      showAsFound: hasExplicitEnvironmentMention,
+    },
+  ];
+  const foundSummaryItems = parseSummaryItems.filter((item) => {
+    const canShowAsFound = item.showAsFound ?? true;
+    return canShowAsFound && foundKeysSet.has(item.key) && item.value;
+  });
+  const defaultSummaryItems = parseSummaryItems.filter((item) => {
+    const canShowAsDefault = item.showAsDefault ?? true;
+    return canShowAsDefault && item.defaultLabel && !foundSummaryItems.some((foundItem) => foundItem.key === item.key);
+  });
 
   return (
     <section className="pageShell newProjectShell">
@@ -236,6 +384,79 @@ export default function NewProjectPage() {
 
         <div className="configuratorLayout">
           <div className="configuratorMain">
+            <div className="inputModePanel">
+              <div className="inputModeTabs" aria-label="Способ заполнения">
+                <button
+                  aria-pressed={fillMode === "form"}
+                  type="button"
+                  onClick={() => setFillMode("form")}
+                >
+                  Форма
+                </button>
+                <button
+                  aria-pressed={fillMode === "text"}
+                  type="button"
+                  onClick={() => setFillMode("text")}
+                >
+                  Текстовое описание
+                </button>
+              </div>
+
+              {fillMode === "text" && (
+                <section className="requirementsTextPanel">
+                  <label className="requirementsTextareaField">
+                    <span>Описание требований</span>
+                    <textarea
+                      placeholder={requirementsPlaceholder}
+                      value={requirementsText}
+                      onChange={(event) => setRequirementsText(event.target.value)}
+                    />
+                  </label>
+                  <div className="requirementsParseActions">
+                    <p>
+                      В текущей версии описание разбирается по правилам первого MVP-сценария.
+                      Проверьте значения перед генерацией.
+                    </p>
+                    <button className="secondaryButton" type="button" onClick={handleParseDescription}>
+                      Разобрать описание
+                    </button>
+                  </div>
+
+                  {parseResult && (
+                    <div className="parseResultPanel">
+                      <h2>Найдено в описании</h2>
+                      {foundSummaryItems.length > 0 ? (
+                        <dl className="parseFoundList">
+                          {foundSummaryItems.map((item) => (
+                            <div key={item.key}>
+                              <dt>{item.label}</dt>
+                              <dd>{item.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : (
+                        <p className="parseEmptyText">
+                          В описании не удалось распознать параметры первого MVP-сценария.
+                          Значения формы оставлены по умолчанию.
+                        </p>
+                      )}
+                      {foundSummaryItems.length > 0 && defaultSummaryItems.length > 0 && (
+                        <div className="parseDefaultsNote">
+                          <strong>Остальные параметры оставлены по умолчанию MVP:</strong>
+                          <span>
+                            {defaultSummaryItems
+                              .map((item) => item.defaultLabel)
+                              .join(", ")}
+                          </span>
+                        </div>
+                      )}
+                      <p>Разбор описания является предварительным. Проверьте поля формы перед генерацией.</p>
+                    </div>
+                  )}
+                </section>
+              )}
+            </div>
+
             <ConfigSection title="Основное">
               <div className="configFieldGrid">
                 <TextField

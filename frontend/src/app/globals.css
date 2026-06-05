@@ -37,7 +37,8 @@ a {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -288,6 +289,158 @@ input {
 .projectConfigurator {
   display: grid;
   gap: 16px;
+}
+
+.inputModePanel {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  padding: 12px 0 14px;
+}
+
+.inputModeTabs {
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: inline-grid;
+  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-self: start;
+  padding: 4px;
+}
+
+.inputModeTabs button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+.inputModeTabs button[aria-pressed="true"] {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--primary-dark);
+}
+
+.requirementsTextPanel {
+  display: grid;
+  gap: 10px;
+}
+
+.requirementsTextareaField {
+  display: grid;
+  gap: 6px;
+}
+
+.requirementsTextareaField span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.requirementsTextareaField textarea {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  line-height: 1.45;
+  min-height: 96px;
+  padding: 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.requirementsTextareaField textarea:focus {
+  border-color: var(--primary);
+  outline: 3px solid rgba(33, 107, 98, 0.14);
+}
+
+.requirementsParseActions {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.requirementsParseActions p,
+.parseResultPanel p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.parseResultPanel {
+  background: #fbfcfd;
+  border: 1px solid #e4e9ef;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+}
+
+.parseResultPanel h2 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.parseFoundList {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.parseFoundList div {
+  border-bottom: 1px solid #e4e9ef;
+  min-width: 0;
+  padding: 7px 8px;
+}
+
+.parseFoundList div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.parseFoundList dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.parseFoundList dd {
+  font-size: 12px;
+  font-weight: 750;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.parseDefaultsNote {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+}
+
+.parseDefaultsNote strong,
+.parseDefaultsNote span,
+.parseEmptyText {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.parseDefaultsNote strong {
+  color: var(--text);
+  font-weight: 800;
 }
 
 .configuratorHeader {
@@ -1812,6 +1965,11 @@ tr:last-child td {
     position: static;
   }
 
+  .requirementsParseActions {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
   .summarySubmitButton {
     position: static;
   }
@@ -1856,6 +2014,7 @@ tr:last-child td {
   .configFieldGrid,
   .configFieldGrid.threeColumns,
   .laterClarifications ul,
+  .parseFoundList,
   .parameterCardGrid,
   .resourceCardGrid,
   .gpioSummaryList,
@@ -1877,6 +2036,10 @@ tr:last-child td {
 
   .fixedParameterRow span {
     grid-column: 1 / -1;
+  }
+
+  .inputModeTabs {
+    width: 100%;
   }
 
   .dashboardSectionHeading h2 {
